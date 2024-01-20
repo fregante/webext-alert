@@ -1,0 +1,11 @@
+{
+	"$schema": "https://json.schemastore.org/chrome-manifest",
+	"name": "webext-alert",
+	"version": "0.0.0",
+	"manifest_version": 3,
+	"action": {},
+	"background": {
+		"service_worker": "../background.js",
+		"type": "module"
+	}
+}
