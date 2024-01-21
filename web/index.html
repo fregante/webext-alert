@@ -1,0 +1,44 @@
+<!-- https://github.com/fregante/webext-alert -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Message</title>
+<link rel="stylesheet" href="https://www.unpkg.com/webext-base-css@1.3.1/webext-base.css">
+<style>
+	body {
+		box-sizing: border-box;
+		min-height: 100vh;
+		margin: 0;
+		padding: 1em;
+
+		justify-content: center;
+		display: flex;
+		flex-direction: column;
+
+		font-size: 14px;
+		line-height: 1.5; font-family: system, system-ui, sans-serif;
+	}
+	div {
+		flex-grow: 1;
+	}
+	button {
+		margin-top: 1em;
+		margin-left: auto;
+	}
+</style>
+
+<body>
+	<div></div>
+	<script>
+		try {
+			const message = new URLSearchParams(location.search);
+			document.querySelector('div').textContent = message.get('message');
+			document.title = message.get('title') || document.title;
+
+			// Fit window
+			window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
+		} catch (error) {
+			document.write('There was an error showing this message');
+		}
+	</script>
+	<button onclick="window.close()">Okay</button>
+</body>
