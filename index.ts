@@ -2,7 +2,9 @@ import {oneEvent} from 'webext-events';
 import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect-page';
 
 async function onPopupClose(watchedWindowId: number): Promise<void> {
-	await oneEvent(chrome.windows.onRemoved, closedWindowId => closedWindowId === watchedWindowId);
+	await oneEvent(chrome.windows.onRemoved, {
+		filter: closedWindowId => closedWindowId === watchedWindowId,
+	});
 }
 
 // This function will be serialized, do not use variables outside its scope
