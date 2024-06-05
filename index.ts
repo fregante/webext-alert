@@ -170,18 +170,23 @@ function getPage(message = '') {
 	`;
 }
 
-async function popupAlert(message: string): Promise<void> {
+async function openPopup(url: string): Promise<chrome.windows.Window> {
 	const width = 420;
 	const height = 150;
 
 	// `chrome` is Promisified where `popupAlert` is used
-	const popup = await chrome.windows.create({
+	return chrome.windows.create({
 		type: 'popup',
-		url: 'data:text/html,' + encodeURIComponent(getPage(message)),
 		focused: true,
+		url,
 		height,
 		width,
 	});
+}
+
+async function popupAlert(message: string): Promise<void> {
+	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
+		?? await openPopup('https://webext-alert.vercel.app/?message=' + encodeURIComponent(message));
 
 	await onPopupClose(popup.id!);
 }
