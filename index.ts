@@ -170,6 +170,13 @@ function getPage(message = '') {
 	`;
 }
 
+function getExternalUrl(message: string): string {
+	const url = new URL('https://webext-alert.vercel.app/');
+	url.searchParams.set('message', message);
+	url.searchParams.set('title', chrome.runtime.getManifest().name);
+	return url.href;
+}
+
 async function openPopup(url: string): Promise<chrome.windows.Window> {
 	const width = 420;
 	const height = 150;
@@ -186,7 +193,7 @@ async function openPopup(url: string): Promise<chrome.windows.Window> {
 
 async function popupAlert(message: string): Promise<void> {
 	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
-		?? await openPopup('https://webext-alert.vercel.app/?message=' + encodeURIComponent(message));
+		?? await openPopup(getExternalUrl(message));
 
 	await onPopupClose(popup.id!);
 }
