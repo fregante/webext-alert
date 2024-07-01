@@ -1,5 +1,5 @@
 import {oneEvent} from 'webext-events';
-import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect-page';
+import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect';
 
 async function onPopupClose(watchedWindowId: number): Promise<void> {
 	await oneEvent(chrome.windows.onRemoved, {
