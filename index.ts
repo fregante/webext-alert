@@ -204,6 +204,6 @@ async function popupAlert(message: string): Promise<void> {
 // `alert()` is not available in any background context in Firefox and Safari
 const webextAlert = isBackgroundWorker() || (!isChrome() && isBackgroundPage())
 	? popupAlert
-	: alert;
+	: globalThis.alert ?? console.log;
 
 export default webextAlert;
