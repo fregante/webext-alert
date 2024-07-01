@@ -1,6 +1,6 @@
 {
 	"name": "webext-alert",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "alert() for background pages/workers in Web Extensions",
 	"keywords": [
 		"browser",
