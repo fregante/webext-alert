@@ -2,7 +2,7 @@
 
 > WebExtension module: alert() for background pages/workers in Web Extensions
 
-- Browsers: Chrome, Safari (currently no Firefox support)
+- Browsers: Chrome, Firefox, Safari
 - Manifest: v2 and v3
 - Contexts: All contexts
 

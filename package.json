@@ -1,6 +1,6 @@
 {
 	"name": "webext-alert",
-	"version": "0.9.0",
+	"version": "1.0.2",
 	"description": "alert() for background pages/workers in Web Extensions",
 	"keywords": [
 		"browser",
@@ -44,17 +44,17 @@
 		}
 	},
 	"dependencies": {
-		"webext-detect-page": "^5.0.0",
-		"webext-events": "^2.0.0"
+		"webext-detect": "^5.0.2",
+		"webext-events": "^3.0.1"
 	},
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.11.0",
-		"@parcel/transformer-webextension": "^2.11.0",
-		"@sindresorhus/tsconfig": "^5.0.0",
-		"@types/chrome": "^0.0.258",
-		"parcel": "^2.11.0",
-		"typescript": "^5.3.3",
-		"xo": "^0.56.0"
+		"@parcel/config-webextension": "^2.12.0",
+		"@parcel/transformer-webextension": "^2.12.0",
+		"@sindresorhus/tsconfig": "^6.0.0",
+		"@types/chrome": "^0.0.268",
+		"parcel": "^2.12.0",
+		"typescript": "^5.5.2",
+		"xo": "^0.58.0"
 	},
 	"engines": {
 		"node": ">=20"

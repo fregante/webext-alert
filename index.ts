@@ -1,8 +1,10 @@
 import {oneEvent} from 'webext-events';
-import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect-page';
+import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect';
 
 async function onPopupClose(watchedWindowId: number): Promise<void> {
-	await oneEvent(chrome.windows.onRemoved, closedWindowId => closedWindowId === watchedWindowId);
+	await oneEvent(chrome.windows.onRemoved, {
+		filter: closedWindowId => closedWindowId === watchedWindowId,
+	});
 }
 
 // This function will be serialized, do not use variables outside its scope
@@ -202,6 +204,6 @@ async function popupAlert(message: string): Promise<void> {
 // `alert()` is not available in any background context in Firefox and Safari
 const webextAlert = isBackgroundWorker() || (!isChrome() && isBackgroundPage())
 	? popupAlert
-	: alert;
+	: globalThis.alert ?? console.log;
 
 export default webextAlert;
