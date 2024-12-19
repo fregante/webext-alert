@@ -179,25 +179,34 @@ function getExternalUrl(message: string): string {
 	return url.href;
 }
 
-async function openPopup(url: string): Promise<chrome.windows.Window> {
+async function openPopup(url: string): Promise<chrome.windows.Window | void > {
 	const width = 420;
 	const height = 150;
 
 	// `chrome` is Promisified where `popupAlert` is used
-	return chrome.windows.create({
-		type: 'popup',
-		focused: true,
-		url,
-		height,
-		width,
-	});
+	try {
+		return await chrome.windows.create({
+			type: 'popup',
+			focused: true,
+			url,
+			height,
+			width,
+		});
+	} catch {
+		// Firefox as always https://github.com/fregante/webext-alert/issues/13
+	}
 }
 
 async function popupAlert(message: string): Promise<void> {
 	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
 		?? await openPopup(getExternalUrl(message));
 
-	await onPopupClose(popup.id!);
+	if (popup?.id) {
+		await onPopupClose(popup.id);
+	} else {
+		// Last ditch effort
+		console.log(message);
+	}
 }
 
 // `alert()` is not available in any service worker
