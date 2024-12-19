@@ -201,7 +201,12 @@ async function popupAlert(message: string): Promise<void> {
 	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
 		?? await openPopup(getExternalUrl(message));
 
-	await onPopupClose(popup.id!);
+	if (popup?.id) {
+		await onPopupClose(popup.id);
+	} else {
+		// Last ditch effort
+		console.log(message);
+	}
 }
 
 // `alert()` is not available in any service worker
