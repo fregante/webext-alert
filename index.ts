@@ -1,6 +1,8 @@
 import {oneEvent} from 'webext-events';
 import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect';
 
+const externalUrl = new URL('https://webext-alert.vercel.app/');
+
 async function onPopupClose(watchedWindowId: number): Promise<void> {
 	await oneEvent(chrome.windows.onRemoved, {
 		filter: closedWindowId => closedWindowId === watchedWindowId,
@@ -155,6 +157,10 @@ const css = /* css */`
 		margin-top: 1em;
 		margin-left: auto;
 	}
+
+	main {
+		white-space: pre-wrap;
+	}
 `;
 
 function getPage(message = '') {
@@ -163,7 +169,6 @@ function getPage(message = '') {
 		<meta charset="utf-8" />
 		<title>${chrome.runtime.getManifest().name}</title>
 		<style>${css}</style>
-		<script defer src="alert.js"></script>
 		<body>
 			<main>${message}</main>
 			<button>Ok</button>
@@ -173,10 +178,9 @@ function getPage(message = '') {
 }
 
 function getExternalUrl(message: string): string {
-	const url = new URL('https://webext-alert.vercel.app/');
-	url.searchParams.set('message', message);
-	url.searchParams.set('title', chrome.runtime.getManifest().name);
-	return url.href;
+	externalUrl.searchParams.set('message', message);
+	externalUrl.searchParams.set('title', chrome.runtime.getManifest().name);
+	return externalUrl.href;
 }
 
 async function openPopup(url: string): Promise<chrome.windows.Window | void > {
@@ -216,3 +220,8 @@ const webextAlert = isBackgroundWorker() || (!isChrome() && isBackgroundPage())
 	: globalThis.alert ?? console.log;
 
 export default webextAlert;
+
+// eslint-disable-next-line unicorn/prevent-abbreviations
+export function setLocalWebExtAlert(url: string): void {
+	externalUrl.href = url;
+}

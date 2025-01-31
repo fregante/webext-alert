@@ -5,9 +5,9 @@
 	"manifest_version": 3,
 	"action": {},
 	"background": {
-		"service_worker": "../background.js",
+		"service_worker": "./background.js",
 		"scripts": [
-			"../background.js"
+			"./background.js"
 		],
 		"type": "module"
 	}
