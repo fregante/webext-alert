@@ -218,6 +218,7 @@ async function openPopup(url: string): Promise<chrome.windows.Window | void > {
 }
 
 async function popupAlert(message: string): Promise<void> {
+	message = message.trim();
 	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
 		?? await openPopup(getHtmlFileUrl(message));
 
