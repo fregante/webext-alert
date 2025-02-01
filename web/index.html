@@ -4,6 +4,10 @@
 <title>Message</title>
 <link rel="stylesheet" href="https://www.unpkg.com/webext-base-css@1.4.4/webext-base.css">
 <style>
+	html {
+		overscroll-behavior: none;
+	}
+
 	body {
 		box-sizing: border-box;
 		min-height: 100vh;
@@ -14,12 +18,18 @@
 		flex-direction: column;
 		font-size: 14px;
 		line-height: 1.5;
+		gap: 1em;
 		font-family: system, system-ui, sans-serif;
 	}
 
 	button {
-		margin-top: 1em;
-		margin-left: auto;
+		margin-inline: auto;
+		min-width: 5em;
+		min-height: 2em;
+	}
+
+	main {
+		white-space: pre-wrap;
 	}
 </style>
 

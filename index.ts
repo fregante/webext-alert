@@ -16,8 +16,16 @@ function pageScript(): void {
 	button.addEventListener('click', _ => {
 		window.close();
 	});
+
+	let timeout: ReturnType<typeof setTimeout>;
 	window.addEventListener('blur', _ => {
-		window.close();
+		timeout = setTimeout(() => {
+			window.close();
+		}, 60_000);
+	});
+
+	window.addEventListener('focus', _ => {
+		clearInterval(timeout);
 	});
 
 	window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
@@ -142,6 +150,10 @@ const css = /* css */`
 
 	/* End webext-base-css */
 
+	html {
+		overscroll-behavior: none;
+	}
+
 	body {
 		box-sizing: border-box;
 		min-height: 100vh;
@@ -152,12 +164,18 @@ const css = /* css */`
 		flex-direction: column;
 		font-size: 14px;
 		line-height: 1.5;
+		gap: 1em;
 		font-family: system, system-ui, sans-serif;
 	}
 
 	button {
-		margin-top: 1em;
-		margin-left: auto;
+		margin-inline: auto;
+		min-width: 70px;
+		min-height: 30px;
+	}
+
+	main {
+		white-space: pre-wrap;
 	}
 `;
 
