@@ -15,15 +15,8 @@ button.addEventListener('click', _ => {
 	window.close();
 });
 
-let timeout;
 window.addEventListener('blur', _ => {
-	timeout = setTimeout(() => {
-		window.close();
-	}, 60_000);
-});
-
-window.addEventListener('focus', _ => {
-	clearInterval(timeout);
+	window.close();
 });
 
 window.resizeBy(0, document.body.scrollHeight - window.innerHeight);

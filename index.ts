@@ -159,10 +159,6 @@ const css = /* css */`
 		margin-top: 1em;
 		margin-left: auto;
 	}
-
-	main {
-		white-space: pre-wrap;
-	}
 `;
 
 function getPage(message = '') {
