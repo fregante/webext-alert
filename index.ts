@@ -2,7 +2,7 @@ import {oneEvent} from 'webext-events';
 import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect';
 
 const defaultUrl = 'https://webext-alert.vercel.app/';
-let externalUrl = new URL(defaultUrl);
+let htmlFileUrl = new URL(defaultUrl);
 
 async function onPopupClose(watchedWindowId: number): Promise<void> {
 	await oneEvent(chrome.windows.onRemoved, {
@@ -175,10 +175,10 @@ function getPage(message = '') {
 	`;
 }
 
-function getExternalUrl(message: string): string {
-	externalUrl.searchParams.set('message', message);
-	externalUrl.searchParams.set('title', chrome.runtime.getManifest().name);
-	return externalUrl.href;
+function getHtmlFileUrl(message: string): string {
+	htmlFileUrl.searchParams.set('message', message);
+	htmlFileUrl.searchParams.set('title', chrome.runtime.getManifest().name);
+	return htmlFileUrl.href;
 }
 
 async function openPopup(url: string): Promise<chrome.windows.Window | void > {
@@ -201,7 +201,7 @@ async function openPopup(url: string): Promise<chrome.windows.Window | void > {
 
 async function popupAlert(message: string): Promise<void> {
 	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
-		?? await openPopup(getExternalUrl(message));
+		?? await openPopup(getHtmlFileUrl(message));
 
 	if (popup?.id) {
 		await onPopupClose(popup.id);
@@ -227,5 +227,5 @@ export default webextAlert;
 */
 // eslint-disable-next-line unicorn/prevent-abbreviations
 export function customizeWebExtAlert(url = defaultUrl): void {
-	externalUrl = new URL(url, chrome.runtime.getURL('/'));
+	htmlFileUrl = new URL(url, chrome.runtime.getURL('/'));
 }
