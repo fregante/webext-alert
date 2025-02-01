@@ -1,11 +1,12 @@
 {
+	"$schema": "https://json.schemastore.org/chrome-manifest",
 	"name": "webext-alert",
 	"version": "0.0.0",
 	"manifest_version": 2,
 	"browser_action": {},
 	"background": {
 		"scripts": [
-			"../background.js"
+			"./background.js"
 		]
 	}
 }
