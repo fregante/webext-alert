@@ -1,7 +1,8 @@
 import {oneEvent} from 'webext-events';
 import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect';
 
-const externalUrl = new URL('https://webext-alert.vercel.app/');
+const defaultUrl = 'https://webext-alert.vercel.app/';
+let externalUrl = new URL(defaultUrl);
 
 async function onPopupClose(watchedWindowId: number): Promise<void> {
 	await oneEvent(chrome.windows.onRemoved, {
@@ -222,7 +223,13 @@ const webextAlert = isBackgroundWorker() || (!isChrome() && isBackgroundPage())
 
 export default webextAlert;
 
+/**
+ * Change the HTML page to be used in certain scenarios (Firefox).
+ * This can be used to add offline support for Firefox.
+ *
+ * @param url If not provided, the default URL will be used
+*/
 // eslint-disable-next-line unicorn/prevent-abbreviations
-export function setLocalWebExtAlert(url: string): void {
-	externalUrl.href = url;
+export function customizeWebExtAlert(url = defaultUrl): void {
+	externalUrl = new URL(url, chrome.runtime.getURL('/'));
 }
