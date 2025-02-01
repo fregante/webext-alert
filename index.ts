@@ -226,6 +226,6 @@ export default webextAlert;
  * @param url If not provided, the default URL will be used
 */
 // eslint-disable-next-line unicorn/prevent-abbreviations
-export function customizeWebExtAlert(url = defaultUrl): void {
+export function localWebExtAlertHtml(url = defaultUrl): void {
 	htmlFileUrl = new URL(url, chrome.runtime.getURL('/'));
 }

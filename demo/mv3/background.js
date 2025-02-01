@@ -1,7 +1,7 @@
-import alert, {customizeWebExtAlert} from 'webext-alert';
+import alert, {localWebExtAlertHtml} from 'webext-alert';
 import localPage from 'url:./webext-alert.html';
 
-customizeWebExtAlert(localPage);
+localWebExtAlertHtml(localPage);
 
 chrome.action.onClicked.addListener(() => {
 	alert('Thanks for clicking!\n\n- Background script');

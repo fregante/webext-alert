@@ -36,12 +36,12 @@ If the native `alert` is used, this will block the execution of the background s
 
 If the custom window is used, `webextAlert` will return a promise that resolves when the user closes the window.
 
-### customizeWebExtAlert(url)
+### localWebExtAlertHtml(url)
 
 In some cases (Firefox), the message must be loaded via a static HTML page. In this case, `webext-alert` will load the page from `https://webext-alert.vercel.app`. If this is undesirable or if you want the extension to work offline in Firefox as well, you can:
 
 1. copy the `html` and `js` files you find in the `web` folder into your extension
-2. call `customizeWebExtAlert('your/folder/the-local-copied-file.html')` at the top of `background.js`
+2. call `localWebExtAlertHtml('your/folder/the-local-copied-file.html')` at the top of `background.js`
 
 ## Known issues
 
