@@ -1,5 +1,5 @@
 import alert, {customizeWebExtAlert} from 'webext-alert';
-import localPage from 'url:../../web/index.html';
+import localPage from 'url:./webext-alert.html';
 
 customizeWebExtAlert(localPage);
 
