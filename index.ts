@@ -1,7 +1,7 @@
 import {oneEvent} from 'webext-events';
 import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect';
 import css from 'bundle-text:./web/alert.css';
-import pageScriptText from 'bundle-text:./web/webext-alert.js';
+import pageScriptText from 'bundle-text:./web/page-script.js';
 
 const defaultUrl = 'https://webext-alert.vercel.app/';
 let htmlFileUrl = new URL(defaultUrl);

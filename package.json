@@ -1,100 +1,102 @@
 {
-"name": "webext-alert",
-"version": "1.1.0",
-"description": "alert() for background pages/workers in Web Extensions",
-"keywords": [
-"browser",
-"chrome",
-"safari",
-"extension",
-"alert",
-"popup",
-"background",
-"window",
-"prompt",
-"firefox",
-"webextension"
-],
-"repository": "fregante/webext-alert",
-"funding": "https://github.com/sponsors/fregante",
-"license": "MIT",
-"author": "Federico Brigante <me@fregante.com> (https://fregante.com)",
-"type": "module",
-"source": "index.ts",
-"module": "./index.js",
-"exports": "./index.js",
-"types": "./index.d.ts",
-"files": [
-"index.js",
-"index.d.ts"
-],
-"scripts": {
-"build": "parcel build index.ts && tsc",
-"demo:build": "parcel build --no-cache",
-"demo:watch": "parcel watch --no-cache --no-hmr",
-"prepack": "npm run build",
-"test": "xo && tsc --noEmit",
-"watch": "tsc --watch"
-},
-"xo": {
-"envs": [
-"browser",
-"webextensions"
-],
-"rules": {
-"no-alert": "off"
-}
-},
-"dependencies": {
-"webext-detect": "^5.3.2",
-"webext-events": "^3.1.1"
-},
-"devDependencies": {
-"@parcel/config-webextension": "^2.13.3",
-"@parcel/packager-ts": "^2.13.3",
-"@parcel/transformer-inline-string": "^2.13.3",
-"@parcel/transformer-webextension": "^2.13.3",
-"@sindresorhus/tsconfig": "^7.0.0",
-"@types/chrome": "^0.0.300",
-"parcel": "^2.13.3",
-"typescript": "^5.7.3",
-"xo": "^0.60.0"
-},
-"engines": {
-"node": ">=20"
-},
-"@parcel/resolver-default": {
-"packageExports": true
-},
-"targets": {
-"main": false,
-"types": false,
-"module": {
-"isLibrary": true,
-"includeNodeModules": false,
-"outputFormat": "esmodule",
-"sourceMap": false
-},
-"mv2": {
-"engines": {
-"browsers": "last 2 Chrome versions"
-},
-"source": "demo/mv2/manifest.json",
-"sourceMap": {
-"inline": true
-}
-},
-"mv3": {
-"engines": {
-"browsers": "last 2 Chrome versions"
-},
-"source": "demo/mv3/manifest.json",
-"sourceMap": {
-"inline": true
-}
-}
-},
-"webExt": {
-"sourceDir": "dist/mv3"
-}
+	"name": "webext-alert",
+	"version": "1.1.0",
+	"description": "alert() for background pages/workers in Web Extensions",
+	"keywords": [
+		"browser",
+		"chrome",
+		"safari",
+		"extension",
+		"alert",
+		"popup",
+		"background",
+		"window",
+		"prompt",
+		"firefox",
+		"webextension"
+	],
+	"repository": "fregante/webext-alert",
+	"funding": "https://github.com/sponsors/fregante",
+	"license": "MIT",
+	"author": "Federico Brigante <me@fregante.com> (https://fregante.com)",
+	"type": "module",
+	"source": "index.ts",
+	"module": "./index.js",
+	"exports": "./index.js",
+	"types": "./index.d.ts",
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
+	"scripts": {
+		"build": "parcel build index.ts && tsc",
+		"demo:build": "parcel build --no-cache",
+		"demo:watch": "parcel watch --no-cache --no-hmr",
+		"prepack": "npm run build",
+		"test": "xo && tsc --noEmit",
+		"watch": "tsc --watch"
+	},
+	"xo": {
+		"envs": [
+			"browser",
+			"webextensions"
+		],
+		"rules": {
+			"no-alert": "off"
+		}
+	},
+	"dependencies": {
+		"webext-detect": "^5.3.2",
+		"webext-events": "^3.1.1"
+	},
+	"devDependencies": {
+		"@parcel/config-webextension": "^2.13.3",
+		"@parcel/packager-ts": "^2.13.3",
+		"@parcel/transformer-inline-string": "^2.13.3",
+		"@parcel/transformer-webextension": "^2.13.3",
+		"@sindresorhus/tsconfig": "^7.0.0",
+		"@types/chrome": "^0.0.300",
+		"parcel": "^2.13.3",
+		"postcss-import": "^16.1.1",
+		"typescript": "^5.7.3",
+		"webext-base-css": "^1.4.4",
+		"xo": "^0.60.0"
+	},
+	"engines": {
+		"node": ">=20"
+	},
+	"@parcel/resolver-default": {
+		"packageExports": true
+	},
+	"targets": {
+		"main": false,
+		"types": false,
+		"module": {
+			"isLibrary": true,
+			"includeNodeModules": false,
+			"outputFormat": "esmodule",
+			"sourceMap": false
+		},
+		"mv2": {
+			"engines": {
+				"browsers": "last 2 Chrome versions"
+			},
+			"source": "demo/mv2/manifest.json",
+			"sourceMap": {
+				"inline": true
+			}
+		},
+		"mv3": {
+			"engines": {
+				"browsers": "last 2 Chrome versions"
+			},
+			"source": "demo/mv3/manifest.json",
+			"sourceMap": {
+				"inline": true
+			}
+		}
+	},
+	"webExt": {
+		"sourceDir": "dist/mv3"
+	}
 }

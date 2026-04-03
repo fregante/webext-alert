@@ -1,15 +1,18 @@
 const textElement = document.querySelector('main');
-const searchParameters = new URLSearchParams(location.search);
 
-const message = searchParameters.get('message');
-if (message !== null) {
-	textElement.textContent = message;
-}
+try {
+	const searchParameters = new URLSearchParams(location.search);
 
-const title = searchParameters.get('title');
-if (title !== null) {
-	document.title = title;
-}
+	const message = searchParameters.get('message');
+	if (message !== null) {
+		textElement.textContent = message;
+	}
+
+	const title = searchParameters.get('title');
+	if (title !== null) {
+		document.title = title;
+	}
+} catch {}
 
 const button = document.querySelector('button');
 button?.addEventListener('click', _ => {
@@ -24,7 +27,7 @@ window.addEventListener('blur', _ => {
 });
 
 window.addEventListener('focus', _ => {
-	clearInterval(timeout);
+	clearTimeout(timeout);
 });
 
 window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
