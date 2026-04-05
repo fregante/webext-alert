@@ -32,6 +32,33 @@ function getHtmlFileUrl(message: string): string {
 	return htmlFileUrl.href;
 }
 
+async function openWithActionPopup(message: string): Promise<boolean> {
+	try {
+		const originalPopup = await chrome.action.getPopup({});
+		await chrome.action.setPopup({popup: getHtmlFileUrl(message)});
+		try {
+			await chrome.action.openPopup();
+			await new Promise<void>((resolve, reject) => {
+				const timeout = setTimeout(reject, 5000);
+				chrome.runtime.onConnect.addListener(function onConnect(port) {
+					if (port.name === 'webext-alert') {
+						clearTimeout(timeout);
+						chrome.runtime.onConnect.removeListener(onConnect);
+						port.onDisconnect.addListener(() => {
+							resolve();
+						});
+					}
+				});
+			});
+			return true;
+		} finally {
+			await chrome.action.setPopup({popup: originalPopup});
+		}
+	} catch {
+		return false;
+	}
+}
+
 async function openPopup(url: string): Promise<chrome.windows.Window | void > {
 	const width = 420;
 	const height = 180;
@@ -52,6 +79,11 @@ async function openPopup(url: string): Promise<chrome.windows.Window | void > {
 
 async function popupAlert(message: string): Promise<void> {
 	message = message.trim();
+
+	if (await openWithActionPopup(message)) {
+		return;
+	}
+
 	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
 		?? await openPopup(getHtmlFileUrl(message));
 
