@@ -13,14 +13,23 @@ async function onPopupClose(watchedWindowId: number): Promise<void> {
 }
 
 async function onPopupResize(windowId: number): Promise<void> {
-	const result = await oneEvent(chrome.runtime.onMessage, {
-		filter: message => Boolean(message?.webextAlert),
+	let updateInfo: chrome.windows.UpdateInfo | undefined;
+	await oneEvent(chrome.runtime.onMessage, {
+		filter(message: unknown) {
+			if (message !== null && typeof message === 'object' && 'webextAlert' in message && typeof message.webextAlert === 'object' && message.webextAlert !== null) {
+				updateInfo = message.webextAlert as chrome.windows.UpdateInfo;
+				return true;
+			}
+
+			return false;
+		},
 	});
-	const [message] = result as [{webextAlert: chrome.windows.UpdateInfo}, ...unknown[]];
-	try {
-		await chrome.windows.update(windowId, message.webextAlert);
-	} catch {
-		// Window was already closed
+	if (updateInfo) {
+		try {
+			await chrome.windows.update(windowId, updateInfo);
+		} catch {
+			// Window was already closed
+		}
 	}
 }
 
