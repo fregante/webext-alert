@@ -37,10 +37,10 @@ async function openWithActionPopup(message: string): Promise<boolean> {
 		const originalPopup = await chrome.action.getPopup({});
 		await chrome.action.setPopup({popup: getHtmlFileUrl(message)});
 		try {
-			await chrome.action.openPopup();
-			await new Promise<void>((resolve, reject) => {
-				const timeout = setTimeout(reject, 5000);
-				chrome.runtime.onConnect.addListener(function onConnect(port) {
+			const timeoutMs = 5000;
+			// Register listener before opening popup to avoid race condition
+			const closePromise = new Promise<void>((resolve, reject) => {
+				function onConnect(port: chrome.runtime.Port) {
 					if (port.name === 'webext-alert') {
 						clearTimeout(timeout);
 						chrome.runtime.onConnect.removeListener(onConnect);
@@ -48,8 +48,16 @@ async function openWithActionPopup(message: string): Promise<boolean> {
 							resolve();
 						});
 					}
-				});
+				}
+
+				chrome.runtime.onConnect.addListener(onConnect);
+				const timeout = setTimeout(() => {
+					chrome.runtime.onConnect.removeListener(onConnect);
+					reject(new Error('webext-alert: popup did not connect in time'));
+				}, timeoutMs);
 			});
+			await chrome.action.openPopup();
+			await closePromise;
 			return true;
 		} finally {
 			await chrome.action.setPopup({popup: originalPopup});
