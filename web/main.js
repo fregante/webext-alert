@@ -33,5 +33,5 @@ const left = Math.round((screen.width - window.outerWidth) / 2);
 const top = Math.round((screen.height - height) / 2);
 window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
 window.moveTo(left, top);
-chrome.runtime.sendMessage({height, left, top});
+chrome.runtime.sendMessage({webextAlert: {height, left, top}});
 button.focus();

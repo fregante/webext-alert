@@ -12,18 +12,13 @@ async function onPopupClose(watchedWindowId: number): Promise<void> {
 	});
 }
 
-async function onPopupResize(windowId: number, signal: AbortSignal): Promise<void> {
+async function onPopupResize(windowId: number): Promise<void> {
 	const result = await oneEvent(chrome.runtime.onMessage, {
-		signal,
-		filter: message => Number.isFinite(message?.height) && Number.isFinite(message?.left) && Number.isFinite(message?.top),
+		filter: message => Boolean(message?.webextAlert),
 	});
-	if (!result) {
-		return;
-	}
-
-	const [message] = result as [{height: number; left: number; top: number}, ...unknown[]];
+	const [message] = result as [{webextAlert: chrome.windows.UpdateInfo}, ...unknown[]];
 	try {
-		await chrome.windows.update(windowId, message);
+		await chrome.windows.update(windowId, message.webextAlert);
 	} catch {
 		// Window was already closed
 	}
@@ -73,15 +68,11 @@ async function popupAlert(message: string): Promise<void> {
 		?? await openPopup(getHtmlFileUrl(message));
 
 	if (popup?.id) {
-		const closePromise = onPopupClose(popup.id);
-		if (isChrome()) {
-			await closePromise;
-		} else {
-			const controller = new AbortController();
-			void onPopupResize(popup.id, controller.signal);
-			await closePromise;
-			controller.abort();
+		if (!isChrome()) {
+			void onPopupResize(popup.id);
 		}
+
+		await onPopupClose(popup.id);
 	} else {
 		// Last ditch effort
 		console.log(message);
