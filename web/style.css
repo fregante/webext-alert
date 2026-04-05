@@ -3,6 +3,7 @@
 :root {
 	overscroll-behavior: none;
 	min-height: 0px; /* Override webext-base's height */
+	min-width: 300px; /* Especially useful for the action popup */
 }
 
 body {
