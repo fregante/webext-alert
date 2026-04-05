@@ -34,7 +34,7 @@ function getHtmlFileUrl(message: string): string {
 
 async function openPopup(url: string): Promise<chrome.windows.Window | void > {
 	const width = 420;
-	const height = 150;
+	const height = 180;
 
 	// `chrome` is Promisified where `popupAlert` is used
 	try {

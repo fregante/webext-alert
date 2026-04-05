@@ -1,7 +1,8 @@
 @import 'webext-base-css/webext-base.css';
 
-html {
+:root {
 	overscroll-behavior: none;
+	min-height: 0px; /* Override webext-base's height */
 }
 
 body {
