@@ -4,7 +4,7 @@ if (!textElement.textContent) {
 	try {
 		const message = new URLSearchParams(location.search);
 		textElement.textContent = message.get('message');
-		document.title = 'xxxxxxx' + (message.get('title') || document.title);
+		document.title = message.get('title') || document.title;
 	} catch {
 		textElement.textContent = 'There was an error showing this message';
 	}
