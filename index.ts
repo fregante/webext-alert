@@ -12,23 +12,12 @@ async function onPopupClose(watchedWindowId: number): Promise<void> {
 	});
 }
 
-type WebextAlertMessage = {webextAlert: chrome.windows.UpdateInfo};
-
-// Chrome types onMessage's `message` as `any`; wrap it so oneEvent infers the right type
-const onWebextAlertMessage = {
-	addListener(cb: (m: WebextAlertMessage) => void) {
-		chrome.runtime.onMessage.addListener(cb);
-	},
-	removeListener(cb: (m: WebextAlertMessage) => void) {
-		chrome.runtime.onMessage.removeListener(cb);
-	},
-};
-
 async function onPopupResize(windowId: number): Promise<void> {
-	const [message] = (await oneEvent(onWebextAlertMessage, {
-		filter: m => Boolean(m.webextAlert),
-	}))!;
-	await chrome.windows.update(windowId, message.webextAlert);
+	const response = await oneEvent(chrome.runtime.onMessage, {
+		filter: (message: unknown) => typeof message === 'object' && message !== null && 'webextAlert' in message,
+	});
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+	await chrome.windows.update(windowId, response![0].webextAlert);
 }
 
 function getPage(message = ''): string {
