@@ -26,12 +26,17 @@ window.addEventListener('focus', _ => {
 	clearInterval(timeout);
 });
 
-// eslint-disable-next-line unicorn/prefer-global-this
-const height = window.outerHeight + document.body.scrollHeight - window.innerHeight;
-// eslint-disable-next-line unicorn/prefer-global-this
-const left = Math.round((screen.width - window.outerWidth) / 2);
-const top = Math.round((screen.height - height) / 2);
-window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
-window.moveTo(left, top);
-chrome.runtime.sendMessage({webextAlert: {height, left, top}});
+// `left` and `top` are browser globals and cannot be redeclared; use an object to group all dimensions
+const scrollOverflow = document.body.scrollHeight - window.innerHeight;
+const size = {
+	// eslint-disable-next-line unicorn/prefer-global-this
+	height: window.outerHeight + scrollOverflow,
+	// eslint-disable-next-line unicorn/prefer-global-this
+	left: Math.round((screen.width - window.outerWidth) / 2),
+	// eslint-disable-next-line unicorn/prefer-global-this
+	top: Math.round((screen.height - (window.outerHeight + scrollOverflow)) / 2),
+};
+window.resizeBy(0, scrollOverflow);
+window.moveTo(size.left, size.top);
+chrome.runtime.sendMessage({webextAlert: size});
 button.focus();
