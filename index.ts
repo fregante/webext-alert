@@ -12,27 +12,20 @@ async function onPopupClose(watchedWindowId: number): Promise<void> {
 	});
 }
 
-async function onPopupResize(windowId: number, tabId: number, signal: AbortSignal): Promise<void> {
-	const result = await oneEvent(chrome.tabs.onUpdated, {
+async function onPopupResize(windowId: number, signal: AbortSignal): Promise<void> {
+	const result = await oneEvent(chrome.runtime.onMessage, {
 		signal,
-		filter: (id, changeInfo) =>
-			id === tabId && Boolean(changeInfo.url?.includes('#webext-alert=')),
+		filter: message => Number.isFinite(message?.height) && Number.isFinite(message?.left) && Number.isFinite(message?.top),
 	});
 	if (!result) {
 		return;
 	}
 
-	const [, changeInfo] = result;
-	const parts = new URL(changeInfo.url!).hash.replace('#webext-alert=', '').split(',');
-	const height = Number(parts[0]);
-	const left = Number(parts[1]);
-	const top = Number(parts[2]);
-	if (height > 0 && Number.isFinite(left) && Number.isFinite(top)) {
-		try {
-			await chrome.windows.update(windowId, {height, left, top});
-		} catch {
-			// Window was already closed
-		}
+	const [message] = result as [{height: number; left: number; top: number}, ...unknown[]];
+	try {
+		await chrome.windows.update(windowId, message);
+	} catch {
+		// Window was already closed
 	}
 }
 
@@ -81,13 +74,13 @@ async function popupAlert(message: string): Promise<void> {
 
 	if (popup?.id) {
 		const closePromise = onPopupClose(popup.id);
-		if (!isChrome() && popup.tabs?.[0]?.id) {
+		if (isChrome()) {
+			await closePromise;
+		} else {
 			const controller = new AbortController();
-			void onPopupResize(popup.id, popup.tabs[0].id, controller.signal);
+			void onPopupResize(popup.id, controller.signal);
 			await closePromise;
 			controller.abort();
-		} else {
-			await closePromise;
 		}
 	} else {
 		// Last ditch effort

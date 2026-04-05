@@ -26,16 +26,12 @@ window.addEventListener('focus', _ => {
 	clearInterval(timeout);
 });
 
-const scrollDelta = document.body.scrollHeight - window.innerHeight;
 // eslint-disable-next-line unicorn/prefer-global-this
-const targetHeight = window.outerHeight + scrollDelta;
+const height = window.outerHeight + document.body.scrollHeight - window.innerHeight;
 // eslint-disable-next-line unicorn/prefer-global-this
-const targetLeft = Math.round((screen.width - window.outerWidth) / 2);
-const targetTop = Math.round((screen.height - targetHeight) / 2);
-
-window.resizeBy(0, scrollDelta);
-window.moveTo(targetLeft, targetTop);
-
-// Tell the opener the intended size/position for browsers that restrict popup self-resizing
-location.hash = `webext-alert=${targetHeight},${targetLeft},${targetTop}`;
+const left = Math.round((screen.width - window.outerWidth) / 2);
+const top = Math.round((screen.height - height) / 2);
+window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
+window.moveTo(left, top);
+chrome.runtime.sendMessage({height, left, top});
 button.focus();
