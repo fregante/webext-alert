@@ -12,24 +12,23 @@ async function onPopupClose(watchedWindowId: number): Promise<void> {
 	});
 }
 
-function isWebextAlertMessage(value: unknown): value is {webextAlert: chrome.windows.UpdateInfo} {
-	return typeof value === 'object' && value !== null && 'webextAlert' in value;
-}
+type WebextAlertMessage = {webextAlert: chrome.windows.UpdateInfo};
+
+// Chrome types onMessage's `message` as `any`; wrap it so oneEvent infers the right type
+const onWebextAlertMessage = {
+	addListener(cb: (m: WebextAlertMessage) => void) {
+		chrome.runtime.onMessage.addListener(cb);
+	},
+	removeListener(cb: (m: WebextAlertMessage) => void) {
+		chrome.runtime.onMessage.removeListener(cb);
+	},
+};
 
 async function onPopupResize(windowId: number): Promise<void> {
-	const result = await oneEvent(chrome.runtime.onMessage, {
-		filter: isWebextAlertMessage,
-	});
-	if (result) {
-		const message = result[0] as unknown;
-		if (isWebextAlertMessage(message)) {
-			try {
-				await chrome.windows.update(windowId, message.webextAlert);
-			} catch {
-				// Window was already closed
-			}
-		}
-	}
+	const [message] = (await oneEvent(onWebextAlertMessage, {
+		filter: m => Boolean(m.webextAlert),
+	}))!;
+	await chrome.windows.update(windowId, message.webextAlert);
 }
 
 function getPage(message = ''): string {
