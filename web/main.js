@@ -1,13 +1,13 @@
 const textElement = document.querySelector('main');
-try {
-	const message = new URLSearchParams(location.search);
-	textElement.textContent = message.get('message');
-	document.title = message.get('title') || document.title;
-
-	// Fit window
-	window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
-} catch {
-	textElement.textContent('There was an error showing this message');
+// The contents may have been pre-set via data URL
+if (!textElement.textContent) {
+	try {
+		const message = new URLSearchParams(location.search);
+		textElement.textContent = message.get('message');
+		document.title = 'xxxxxxx' + (message.get('title') || document.title);
+	} catch {
+		textElement.textContent = 'There was an error showing this message';
+	}
 }
 
 const button = document.querySelector('button');
