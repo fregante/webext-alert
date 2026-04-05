@@ -4,7 +4,7 @@ if (!textElement.textContent) {
 	try {
 		const message = new URLSearchParams(location.search);
 		textElement.textContent = message.get('message');
-		document.title = message.get('title') || document.title;
+		document.title = 'xxxxxxx' + (message.get('title') || document.title);
 	} catch {
 		textElement.textContent = 'There was an error showing this message';
 	}
@@ -30,3 +30,11 @@ window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
 // eslint-disable-next-line unicorn/prefer-global-this
 window.moveTo((screen.width - window.outerWidth) / 2, (screen.height - window.outerHeight) / 2);
 button.focus();
+
+setTimeout(() => {
+console.log(document.body.scrollHeight - window.innerHeight)
+window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
+window.resizeBy(0, 100);
+// eslint-disable-next-line unicorn/prefer-global-this
+window.moveTo((screen.width - window.outerWidth) / 2, (screen.height - window.outerHeight) / 2);
+}, 1000)

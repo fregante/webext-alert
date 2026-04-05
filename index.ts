@@ -1,7 +1,7 @@
 import {oneEvent} from 'webext-events';
 import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect';
-import css from 'bundle-text:./web/alert.css';
-import pageScriptText from 'bundle-text:./web/page-script.js';
+import css from 'bundle-text:./web/style.css';
+import js from 'bundle-text:./web/main.js';
 
 const defaultUrl = 'https://webext-alert.vercel.app/';
 let htmlFileUrl = new URL(defaultUrl);
@@ -22,7 +22,7 @@ function getPage(message = ''): string {
 			<main>${message}</main>
 			<button>Ok</button>
 		</body>
-		<script>${pageScriptText}</script>
+		<script>${js}</script>
 	`;
 }
 
