@@ -2,7 +2,8 @@
 	"extends": "@sindresorhus/tsconfig",
 	"compilerOptions": {
 		"outDir": ".",
-		"emitDeclarationOnly": true
+		"emitDeclarationOnly": true,
+		"types": ["chrome"]
 	},
 	"files": [
 		"index.ts",

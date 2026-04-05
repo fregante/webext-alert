@@ -32,7 +32,7 @@ function getHtmlFileUrl(message: string): string {
 	return htmlFileUrl.href;
 }
 
-async function openPopup(url: string): Promise<chrome.windows.Window | void > {
+async function openPopup(url: string): Promise<chrome.windows.Window | void> {
 	const width = 420;
 	const height = 180;
 
