@@ -26,7 +26,16 @@ window.addEventListener('focus', _ => {
 	clearInterval(timeout);
 });
 
-window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
+const scrollDelta = document.body.scrollHeight - window.innerHeight;
 // eslint-disable-next-line unicorn/prefer-global-this
-window.moveTo((screen.width - window.outerWidth) / 2, (screen.height - window.outerHeight) / 2);
+const targetHeight = window.outerHeight + scrollDelta;
+// eslint-disable-next-line unicorn/prefer-global-this
+const targetLeft = Math.round((screen.width - window.outerWidth) / 2);
+const targetTop = Math.round((screen.height - targetHeight) / 2);
+
+window.resizeBy(0, scrollDelta);
+window.moveTo(targetLeft, targetTop);
+
+// Tell the opener the intended size/position for browsers that restrict popup self-resizing
+location.hash = `webext-alert=${targetHeight},${targetLeft},${targetTop}`;
 button.focus();

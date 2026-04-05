@@ -12,6 +12,30 @@ async function onPopupClose(watchedWindowId: number): Promise<void> {
 	});
 }
 
+async function onPopupResize(windowId: number, tabId: number, signal: AbortSignal): Promise<void> {
+	const result = await oneEvent(chrome.tabs.onUpdated, {
+		signal,
+		filter: (id, changeInfo) =>
+			id === tabId && Boolean(changeInfo.url?.includes('#webext-alert=')),
+	});
+	if (!result) {
+		return;
+	}
+
+	const [, changeInfo] = result;
+	const parts = new URL(changeInfo.url!).hash.replace('#webext-alert=', '').split(',');
+	const height = Number(parts[0]);
+	const left = Number(parts[1]);
+	const top = Number(parts[2]);
+	if (height > 0 && Number.isFinite(left) && Number.isFinite(top)) {
+		try {
+			await chrome.windows.update(windowId, {height, left, top});
+		} catch {
+			// Window was already closed
+		}
+	}
+}
+
 function getPage(message = ''): string {
 	return /* html */ `
 		<!doctype html>
@@ -56,7 +80,15 @@ async function popupAlert(message: string): Promise<void> {
 		?? await openPopup(getHtmlFileUrl(message));
 
 	if (popup?.id) {
-		await onPopupClose(popup.id);
+		const closePromise = onPopupClose(popup.id);
+		if (!isChrome() && popup.tabs?.[0]?.id) {
+			const controller = new AbortController();
+			void onPopupResize(popup.id, popup.tabs[0].id, controller.signal);
+			await closePromise;
+			controller.abort();
+		} else {
+			await closePromise;
+		}
 	} else {
 		// Last ditch effort
 		console.log(message);
