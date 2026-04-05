@@ -26,7 +26,14 @@ window.addEventListener('focus', _ => {
 	clearInterval(timeout);
 });
 
+// `left` and `top` are browser globals and cannot be redeclared; use an object to group all dimensions
+const size = {
+	height: document.body.scrollHeight,
+	// eslint-disable-next-line unicorn/prefer-global-this
+	left: Math.round((screen.width - window.outerWidth) / 2),
+	top: Math.round((screen.height - document.body.scrollHeight) / 2),
+};
 window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
-// eslint-disable-next-line unicorn/prefer-global-this
-window.moveTo((screen.width - window.outerWidth) / 2, (screen.height - window.outerHeight) / 2);
+window.moveTo(size.left, size.top);
+chrome.runtime.sendMessage({webextAlert: size});
 button.focus();

@@ -12,6 +12,14 @@ async function onPopupClose(watchedWindowId: number): Promise<void> {
 	});
 }
 
+async function onPopupResize(windowId: number): Promise<void> {
+	const response = await oneEvent(chrome.runtime.onMessage, {
+		filter: (message: unknown) => typeof message === 'object' && message !== null && 'webextAlert' in message,
+	});
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+	await chrome.windows.update(windowId, response![0].webextAlert);
+}
+
 function getPage(message = ''): string {
 	return /* html */ `
 		<!doctype html>
@@ -56,6 +64,10 @@ async function popupAlert(message: string): Promise<void> {
 		?? await openPopup(getHtmlFileUrl(message));
 
 	if (popup?.id) {
+		if (!isChrome()) {
+			void onPopupResize(popup.id);
+		}
+
 		await onPopupClose(popup.id);
 	} else {
 		// Last ditch effort
