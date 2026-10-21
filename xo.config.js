@@ -1,7 +1,12 @@
 import globals from 'globals';
 
-/** @type {import('xo').FlatXoConfig} */
+/**
+@type {import('xo').FlatXoConfig}
+*/
 const xoConfig = [
+	{
+		ignores: ['demo/package.json'],
+	},
 	{
 		languageOptions: {
 			globals: {
