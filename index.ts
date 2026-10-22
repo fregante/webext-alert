@@ -1,4 +1,4 @@
-import {oneEvent} from 'webext-events';
+import oneEvent from 'webext-events/one-event';
 import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect';
 import css from 'bundle-text:./web/style.css';
 import js from 'bundle-text:./web/main.js';
