@@ -29,3 +29,18 @@ button {
 main {
 	white-space: pre-wrap;
 }
+
+.buttons {
+	display: flex;
+	gap: 0.5em;
+	justify-content: center;
+}
+
+.buttons button {
+	margin-inline: 0;
+}
+
+input {
+	box-sizing: border-box;
+	width: 100%;
+}

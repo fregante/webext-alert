@@ -26,7 +26,7 @@ npm install webext-alert
 ## Usage
 
 ```js
-import alert from 'webext-alert';
+import {alert} from 'webext-alert';
 
 alert('Hello from background script!');
 ```
@@ -43,6 +43,30 @@ If the native `alert` is used, this will block the execution of the background s
 
 If the custom window is used, `webextAlert` will return a promise that resolves when the user closes the window.
 
+### confirm(message)
+
+Returns a promise that resolves to `true` if the user clicked OK, `false` if they cancelled or closed the popup.
+
+The custom window must be able to send the answer back, so it requires a local page: call `localWebExtAlertHtml()` first (see below).
+
+```js
+import {confirm} from 'webext-alert';
+
+if (await confirm('Delete everything?')) {
+	// …
+}
+```
+
+### prompt(message, defaultValue?)
+
+Returns a promise that resolves to the text entered by the user, or `null` if they cancelled or closed the popup. It requires `localWebExtAlertHtml()` as well.
+
+```js
+import {prompt} from 'webext-alert';
+
+const name = await prompt('What is your name?', 'Anonymous');
+```
+
 ### localWebExtAlertHtml(url)
 
 In some cases it will display the message using a remote page hosted on `https://webext-alert.vercel.app`. The source of this page can be found in the [`./web` folder](./web). If you prefer having a local version, you can:
@@ -52,7 +76,7 @@ In some cases it will display the message using a remote page hosted on `https:/
 
 ```js
 // background.js
-import alert, {localWebExtAlertHtml} from 'webext-alert';
+import {alert, localWebExtAlertHtml} from 'webext-alert';
 
 localWebExtAlertHtml('your/folder/the-local-copied-file.html');
 

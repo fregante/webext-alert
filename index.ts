@@ -20,6 +20,8 @@ async function onPopupResize(windowId: number): Promise<void> {
 	await chrome.windows.update(windowId, response![0].webextAlert);
 }
 
+type PopupKind = 'alert' | 'confirm' | 'prompt';
+
 function getPage(message = ''): string {
 	return /* html */ `
 		<!doctype html>
@@ -34,39 +36,66 @@ function getPage(message = ''): string {
 	`;
 }
 
-function getHtmlFileUrl(message: string): string {
-	htmlFileUrl.searchParams.set('message', message);
-	htmlFileUrl.searchParams.set('title', chrome.runtime.getManifest().name);
-	return htmlFileUrl.href;
+function getHtmlFileUrl(message: string, kind: PopupKind = 'alert', defaultValue = ''): string {
+	const url = new URL(htmlFileUrl);
+	url.searchParams.set('message', message);
+	url.searchParams.set('title', chrome.runtime.getManifest().name);
+	if (kind !== 'alert') {
+		url.searchParams.set('kind', kind);
+		url.searchParams.set('default', defaultValue);
+	}
+
+	return url.href;
 }
 
-async function openWithActionPopup(message: string): Promise<void> {
-	const originalPopup = await chrome.action.getPopup({});
-	await chrome.action.setPopup({popup: getHtmlFileUrl(message)});
-	try {
-		const timeoutMs = 5000;
-		// Register listener before opening popup to avoid race condition
-		const closePromise = new Promise<void>((resolve, reject) => {
-			function onConnect(port: chrome.runtime.Port) {
-				if (port.name !== 'webext-alert') {
-					return;
-				}
+// Register the listener before opening the popup to avoid race conditions
+function listenForPopup(timeoutMs?: number) {
+	let answer: unknown;
+	let timeout: ReturnType<typeof setTimeout> | undefined;
+	let onConnect: ((port: chrome.runtime.Port) => void) | undefined;
 
-				clearTimeout(timeout);
-				chrome.runtime.onConnect.removeListener(onConnect);
-				port.onDisconnect.addListener(() => {
-					resolve();
-				});
+	function stop() {
+		clearTimeout(timeout);
+		if (onConnect) {
+			chrome.runtime.onConnect.removeListener(onConnect);
+		}
+	}
+
+	const closed = new Promise<void>((resolve, reject) => {
+		onConnect = port => {
+			if (port.name !== 'webext-alert') {
+				return;
 			}
 
-			chrome.runtime.onConnect.addListener(onConnect);
-			const timeout = setTimeout(() => {
-				chrome.runtime.onConnect.removeListener(onConnect);
+			stop();
+			port.onMessage.addListener((message: unknown) => {
+				answer = (message as {answer?: unknown}).answer;
+			});
+			port.onDisconnect.addListener(() => {
+				resolve();
+			});
+		};
+
+		chrome.runtime.onConnect.addListener(onConnect);
+		if (timeoutMs !== undefined) {
+			timeout = setTimeout(() => {
+				stop();
 				reject(new Error('webext-alert: popup did not connect in time'));
 			}, timeoutMs);
-		});
+		}
+	});
+
+	return {closed, stop, getAnswer: () => answer};
+}
+
+async function openWithActionPopup(message: string, kind: PopupKind, defaultValue: string): Promise<unknown> {
+	const originalPopup = await chrome.action.getPopup({});
+	await chrome.action.setPopup({popup: getHtmlFileUrl(message, kind, defaultValue)});
+	try {
+		const listener = listenForPopup(5000);
 		await chrome.action.openPopup();
-		await closePromise;
+		await listener.closed;
+		return listener.getAnswer();
 	} finally {
 		await chrome.action.setPopup({popup: originalPopup});
 	}
@@ -90,38 +119,90 @@ async function openPopup(url: string): Promise<chrome.windows.Window | void> {
 	}
 }
 
-async function popupAlert(message: string): Promise<void> {
+async function showPopup(kind: PopupKind, message: string, defaultValue = ''): Promise<unknown> {
 	message = message.trim();
 
+	// The answer can only be sent back by an extension page, not by a `data:` URL or a remote page
+	if (kind !== 'alert' && !htmlFileUrl.protocol.endsWith('extension:')) {
+		throw new Error(`webext-alert: ${kind}() requires a local page, call localWebExtAlertHtml() first`);
+	}
+
 	try {
-		await openWithActionPopup(message);
-		return;
+		return await openWithActionPopup(message, kind, defaultValue);
 	} catch {
 		// Continue with the alternatives
 	}
 
-	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
-		?? await openPopup(getHtmlFileUrl(message));
-
-	if (popup?.id === undefined) {
-		// Last ditch effort
-		console.log(message);
-	} else {
-		if (!isChrome()) {
-			void onPopupResize(popup.id);
+	const listener = listenForPopup();
+	try {
+		let popup: chrome.windows.Window | void;
+		if (kind === 'alert') {
+			popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)));
 		}
 
-		await onPopupClose(popup.id);
+		popup ??= await openPopup(getHtmlFileUrl(message, kind, defaultValue));
+
+		if (popup?.id === undefined) {
+			// Last ditch effort
+			console.log(message);
+		} else {
+			if (!isChrome()) {
+				void onPopupResize(popup.id);
+			}
+
+			await onPopupClose(popup.id);
+		}
+	} finally {
+		listener.stop();
 	}
+
+	return listener.getAnswer();
+}
+
+async function popupAlert(message: string): Promise<void> {
+	await showPopup('alert', message);
 }
 
 // `alert()` is not available in any service worker
 // `alert()` is not available in any background context in Firefox and Safari
-const webextAlert = isBackgroundWorker() || (!isChrome() && isBackgroundPage())
+const shouldUsePopup = isBackgroundWorker() || (!isChrome() && isBackgroundPage());
+
+const webextAlert = shouldUsePopup
 	? popupAlert
 	: globalThis.alert ?? console.log;
 
 export default webextAlert;
+
+/**
+ Like `confirm()`, but also available where the native one isn't.
+
+ Outside of the native `confirm()` contexts, `localWebExtAlertHtml()` must be called first.
+
+ @returns `true` if the user clicked OK, `false` if they cancelled or closed the popup
+*/
+// eslint-disable-next-line unicorn/consistent-boolean-name -- Same name as the native `confirm()`
+export async function confirm(message = ''): Promise<boolean> {
+	return shouldUsePopup
+		? await showPopup('confirm', message) === true
+		: globalThis.confirm?.(message) ?? false;
+}
+
+/**
+ Like `prompt()`, but also available where the native one isn't.
+
+ Outside of the native `prompt()` contexts, `localWebExtAlertHtml()` must be called first.
+
+ @returns The text entered by the user, or `null` if they cancelled or closed the popup
+*/
+// eslint-disable-next-line @typescript-eslint/no-restricted-types -- Same return value as the native `prompt()`
+export async function prompt(message = '', defaultValue = ''): Promise<string | null> {
+	if (!shouldUsePopup) {
+		return globalThis.prompt?.(message, defaultValue) ?? null;
+	}
+
+	const answer = await showPopup('prompt', message, defaultValue);
+	return typeof answer === 'string' ? answer : null;
+}
 
 /**
  Change the HTML page to be used in certain scenarios (Firefox).
