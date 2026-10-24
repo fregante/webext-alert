@@ -43,6 +43,30 @@ In some cases (Firefox), the message must be loaded via a static HTML page. In t
 1. copy the `html` and `js` files you find in the `web` folder into your extension
 2. call `localWebExtAlertHtml('your/folder/the-local-copied-file.html')` at the top of `background.js`
 
+### confirm(message)
+
+Returns a promise that resolves to `true` if the user clicked OK, `false` if they cancelled or closed the popup. Uses `confirm()` wherever possible, but falls back to a custom window.
+
+The custom window must be able to send the answer back, so it requires a local page: call `localWebExtAlertHtml()` first (see above).
+
+```js
+import {confirm} from 'webext-alert';
+
+if (await confirm('Delete everything?')) {
+	// …
+}
+```
+
+### prompt(message, defaultValue?)
+
+Returns a promise that resolves to the text entered by the user, or `null` if they cancelled or closed the popup. Uses `prompt()` wherever possible, but falls back to a custom window, which requires `localWebExtAlertHtml()` as well.
+
+```js
+import {prompt} from 'webext-alert';
+
+const name = await prompt('What is your name?', 'Anonymous');
+```
+
 ## Known issues
 
 - If the user is using a full screen window on macOS or they're on mobile, a whole new window will be opened instead of a popup. This is a limitation of the WebExtensions API.
