@@ -32,38 +32,36 @@ function getHtmlFileUrl(message: string): string {
 	return htmlFileUrl.href;
 }
 
-async function openWithActionPopup(message: string): Promise<boolean> {
+async function openWithActionPopup(message: string): Promise<void> {
+	const originalPopup = await chrome.action.getPopup({});
+	await chrome.action.setPopup({popup: getHtmlFileUrl(message)});
 	try {
-		const originalPopup = await chrome.action.getPopup({});
-		await chrome.action.setPopup({popup: getHtmlFileUrl(message)});
-		try {
-			const timeoutMs = 5000;
-			// Register listener before opening popup to avoid race condition
-			const closePromise = new Promise<void>((resolve, reject) => {
-				function onConnect(port: chrome.runtime.Port) {
-					if (port.name === 'webext-alert') {
-						clearTimeout(timeout);
-						chrome.runtime.onConnect.removeListener(onConnect);
-						port.onDisconnect.addListener(() => {
-							resolve();
-						});
-					}
+		const timeoutMs = 5000;
+		// Register listener before opening popup to avoid race condition
+		const closePromise = new Promise<void>((resolve, reject) => {
+			function onConnect(port: chrome.runtime.Port) {
+				if (port.name !== 'webext-alert') {
+					return;
 				}
 
-				chrome.runtime.onConnect.addListener(onConnect);
-				const timeout = setTimeout(() => {
-					chrome.runtime.onConnect.removeListener(onConnect);
-					reject(new Error('webext-alert: popup did not connect in time'));
-				}, timeoutMs);
-			});
-			await chrome.action.openPopup();
-			await closePromise;
-			return true;
-		} finally {
-			await chrome.action.setPopup({popup: originalPopup});
-		}
-	} catch {
-		return false;
+				clearTimeout(timeout);
+				chrome.runtime.onConnect.removeListener(onConnect);
+				port.onDisconnect.addListener(() => {
+					resolve();
+				});
+			}
+
+			chrome.runtime.onConnect.addListener(onConnect);
+			const timeout = setTimeout(() => {
+				chrome.runtime.onConnect.removeListener(onConnect);
+				reject(new Error('webext-alert: popup did not connect in time'));
+			}, timeoutMs);
+		});
+		await chrome.action.openPopup();
+		await closePromise;
+		return true;
+	} finally {
+		await chrome.action.setPopup({popup: originalPopup});
 	}
 }
 
@@ -88,8 +86,11 @@ async function openPopup(url: string): Promise<chrome.windows.Window | void> {
 async function popupAlert(message: string): Promise<void> {
 	message = message.trim();
 
-	if (await openWithActionPopup(message)) {
+	try {
+		await openWithActionPopup(message);
 		return;
+	} catch {
+		// Continue with the alternatives
 	}
 
 	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
