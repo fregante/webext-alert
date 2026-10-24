@@ -29,7 +29,6 @@ window.addEventListener('focus', _ => {
 // `left` and `top` are browser globals and cannot be redeclared; use an object to group all dimensions
 const size = {
 	height: document.body.scrollHeight,
-	// eslint-disable-next-line unicorn/prefer-global-this
 	left: Math.round((screen.width - window.outerWidth) / 2),
 	top: Math.round((screen.height - document.body.scrollHeight) / 2),
 };
