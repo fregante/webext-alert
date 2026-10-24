@@ -77,6 +77,18 @@ import {prompt} from 'webext-alert';
 const name = await prompt('What is your name?', 'Anonymous');
 ```
 
+### showErrors(callback)
+
+Wraps `callback` so that any error it throws (or any promise it rejects) is logged and shown to the user via `alert()`. Returns a function with the same parameters.
+
+```js
+import {showErrors} from 'webext-alert';
+
+chrome.action.onClicked.addListener(showErrors(async () => {
+	await chrome.permissions.request({origins: ['*://*/*']});
+}));
+```
+
 ### localWebExtAlertHtml(url)
 
 `alert()` may display the message using a remote page hosted on `https://webext-alert.vercel.app`. The source of this page can be found in the [`./web` folder](./web). The remote page can't communicate with your extension, so `confirm()` and `prompt()` **require** a local copy when the custom window is used (service workers, Firefox, Safari). For `alert()` it's optional, but it adds offline support.

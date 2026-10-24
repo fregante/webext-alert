@@ -207,3 +207,21 @@ export const prompt = isNative
 export function localWebExtAlertHtml(url = defaultUrl): void {
 	htmlFileUrl = new URL(url, chrome.runtime.getURL('/'));
 }
+
+/**
+ Wraps a callback so that any error it throws (or any promise it rejects) is shown to the user via `alert()`.
+
+ @param callback The function to wrap, sync or async
+*/
+export function showErrors<Arguments extends unknown[]>(
+	callback: (...arguments_: Arguments) => unknown,
+): (...arguments_: Arguments) => Promise<void> {
+	return async (...arguments_) => {
+		try {
+			await callback(...arguments_);
+		} catch (error) {
+			console.error(error);
+			await webextAlert(error instanceof Error ? error.message : String(error));
+		}
+	};
+}
