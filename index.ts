@@ -12,6 +12,14 @@ async function onPopupClose(watchedWindowId: number): Promise<void> {
 	});
 }
 
+async function onPopupResize(windowId: number): Promise<void> {
+	const response = await oneEvent(chrome.runtime.onMessage, {
+		filter: (message: unknown) => typeof message === 'object' && message !== null && 'webextAlert' in message,
+	});
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+	await chrome.windows.update(windowId, response![0].webextAlert);
+}
+
 function getPage(message = ''): string {
 	return /* html */ `
 		<!doctype html>
@@ -30,6 +38,38 @@ function getHtmlFileUrl(message: string): string {
 	htmlFileUrl.searchParams.set('message', message);
 	htmlFileUrl.searchParams.set('title', chrome.runtime.getManifest().name);
 	return htmlFileUrl.href;
+}
+
+async function openWithActionPopup(message: string): Promise<void> {
+	const originalPopup = await chrome.action.getPopup({});
+	await chrome.action.setPopup({popup: getHtmlFileUrl(message)});
+	try {
+		const timeoutMs = 5000;
+		// Register listener before opening popup to avoid race condition
+		const closePromise = new Promise<void>((resolve, reject) => {
+			function onConnect(port: chrome.runtime.Port) {
+				if (port.name !== 'webext-alert') {
+					return;
+				}
+
+				clearTimeout(timeout);
+				chrome.runtime.onConnect.removeListener(onConnect);
+				port.onDisconnect.addListener(() => {
+					resolve();
+				});
+			}
+
+			chrome.runtime.onConnect.addListener(onConnect);
+			const timeout = setTimeout(() => {
+				chrome.runtime.onConnect.removeListener(onConnect);
+				reject(new Error('webext-alert: popup did not connect in time'));
+			}, timeoutMs);
+		});
+		await chrome.action.openPopup();
+		await closePromise;
+	} finally {
+		await chrome.action.setPopup({popup: originalPopup});
+	}
 }
 
 async function openPopup(url: string): Promise<chrome.windows.Window | void> {
@@ -52,6 +92,14 @@ async function openPopup(url: string): Promise<chrome.windows.Window | void> {
 
 async function popupAlert(message: string): Promise<void> {
 	message = message.trim();
+
+	try {
+		await openWithActionPopup(message);
+		return;
+	} catch {
+		// Continue with the alternatives
+	}
+
 	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
 		?? await openPopup(getHtmlFileUrl(message));
 
@@ -59,6 +107,10 @@ async function popupAlert(message: string): Promise<void> {
 		// Last ditch effort
 		console.log(message);
 	} else {
+		if (!isChrome()) {
+			void onPopupResize(popup.id);
+		}
+
 		await onPopupClose(popup.id);
 	}
 }

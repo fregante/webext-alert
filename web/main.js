@@ -1,3 +1,10 @@
+// Connect to background to allow it to detect when this popup closes
+try {
+	chrome.runtime.connect({name: 'webext-alert'});
+} catch {
+	// Not available in all contexts (e.g. data URLs in some browsers)
+}
+
 const textElement = document.querySelector('main');
 // The contents may have been pre-set via data URL
 if (!textElement.textContent) {
@@ -26,6 +33,12 @@ window.addEventListener('focus', _ => {
 	clearInterval(timeout);
 });
 
-window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
-window.moveTo((screen.width - window.outerWidth) / 2, (screen.height - window.outerHeight) / 2);
+// `left` and `top` are browser globals and cannot be redeclared; use an object to group all dimensions
+const size = {
+	height: document.body.scrollHeight + window.outerHeight - window.innerHeight,
+	left: Math.round((screen.width - window.outerWidth) / 2),
+	top: Math.round((screen.height - document.body.scrollHeight) / 2),
+};
+window.moveTo(size.left, size.top);
+chrome.runtime.sendMessage({webextAlert: size});
 button.focus();
