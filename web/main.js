@@ -28,11 +28,10 @@ window.addEventListener('focus', _ => {
 
 // `left` and `top` are browser globals and cannot be redeclared; use an object to group all dimensions
 const size = {
-	height: document.body.scrollHeight,
+	height: document.body.scrollHeight + window.outerHeight - window.innerHeight,
 	left: Math.round((screen.width - window.outerWidth) / 2),
 	top: Math.round((screen.height - document.body.scrollHeight) / 2),
 };
-window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
 window.moveTo(size.left, size.top);
 chrome.runtime.sendMessage({webextAlert: size});
 button.focus();
