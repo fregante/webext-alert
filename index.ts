@@ -67,7 +67,7 @@ async function openWithActionPopup(message: string): Promise<boolean> {
 	}
 }
 
-async function openPopup(url: string): Promise<chrome.windows.Window | void > {
+async function openPopup(url: string): Promise<chrome.windows.Window | void> {
 	const width = 420;
 	const height = 180;
 
@@ -95,11 +95,11 @@ async function popupAlert(message: string): Promise<void> {
 	const popup = await openPopup('data:text/html,' + encodeURIComponent(getPage(message)))
 		?? await openPopup(getHtmlFileUrl(message));
 
-	if (popup?.id) {
-		await onPopupClose(popup.id);
-	} else {
+	if (popup?.id === undefined) {
 		// Last ditch effort
 		console.log(message);
+	} else {
+		await onPopupClose(popup.id);
 	}
 }
 
@@ -112,12 +112,11 @@ const webextAlert = isBackgroundWorker() || (!isChrome() && isBackgroundPage())
 export default webextAlert;
 
 /**
- * Change the HTML page to be used in certain scenarios (Firefox).
- * This can be used to add offline support for Firefox.
- *
- * @param url If not provided, the default URL will be used
+ Change the HTML page to be used in certain scenarios (Firefox).
+ This can be used to add offline support for Firefox.
+
+ @param url If not provided, the default URL will be used
 */
-// eslint-disable-next-line unicorn/prevent-abbreviations
 export function localWebExtAlertHtml(url = defaultUrl): void {
 	htmlFileUrl = new URL(url, chrome.runtime.getURL('/'));
 }

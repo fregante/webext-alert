@@ -2,6 +2,34 @@
 	"name": "webext-alert",
 	"version": "1.1.0",
 	"description": "alert() for background pages/workers in Web Extensions",
+	"license": "MIT",
+	"repository": "fregante/webext-alert",
+	"funding": "https://github.com/sponsors/fregante",
+	"author": "Federico Brigante <me@fregante.com> (https://fregante.com)",
+	"type": "module",
+	"exports": {
+		"types": "./index.d.ts",
+		"default": {
+			"types": "./index.d.ts",
+			"default": "./index.js"
+		}
+	},
+	"sideEffects": false,
+	"engines": {
+		"node": ">=24"
+	},
+	"scripts": {
+		"build": "parcel build index.ts && tsc",
+		"demo:build": "parcel build --no-cache",
+		"demo:watch": "parcel watch --no-cache --no-hmr",
+		"prepack": "npm run build",
+		"test": "xo && tsc --noEmit",
+		"watch": "tsc --watch"
+	},
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
 	"keywords": [
 		"browser",
 		"chrome",
@@ -15,56 +43,25 @@
 		"firefox",
 		"webextension"
 	],
-	"repository": "fregante/webext-alert",
-	"funding": "https://github.com/sponsors/fregante",
-	"license": "MIT",
-	"author": "Federico Brigante <me@fregante.com> (https://fregante.com)",
-	"type": "module",
-	"source": "index.ts",
-	"module": "./index.js",
-	"exports": "./index.js",
-	"types": "./index.d.ts",
-	"files": [
-		"index.js",
-		"index.d.ts"
-	],
-	"scripts": {
-		"build": "parcel build index.ts && tsc",
-		"demo:build": "parcel build --no-cache",
-		"demo:watch": "parcel watch --no-cache --no-hmr",
-		"prepack": "npm run build",
-		"test": "xo && tsc --noEmit",
-		"watch": "tsc --watch"
-	},
-	"xo": {
-		"envs": [
-			"browser",
-			"webextensions"
-		],
-		"rules": {
-			"no-alert": "off"
-		}
-	},
 	"dependencies": {
-		"webext-detect": "^5.3.2",
+		"webext-detect": "^6.0.0",
 		"webext-events": "^3.1.1"
 	},
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.13.3",
-		"@parcel/packager-ts": "^2.13.3",
-		"@parcel/transformer-inline-string": "^2.13.3",
-		"@parcel/transformer-webextension": "^2.13.3",
-		"@sindresorhus/tsconfig": "^7.0.0",
-		"@types/chrome": "^0.0.300",
-		"parcel": "^2.13.3",
-		"postcss-import": "^16.1.1",
-		"typescript": "^5.7.3",
-		"webext-base-css": "^1.4.4",
-		"xo": "^0.60.0"
+		"@parcel/config-webextension": "^2.16.4",
+		"@parcel/packager-ts": "^2.16.4",
+		"@parcel/transformer-inline-string": "^2.16.4",
+		"@parcel/transformer-webextension": "^2.16.4",
+		"@sindresorhus/tsconfig": "^8.1.0",
+		"@types/chrome": "^0.3.6",
+		"globals": "^17.13.0",
+		"parcel": "^2.16.4",
+		"postcss-import": "^17.0.1",
+		"typescript": "^6.0.3",
+		"webext-base-css": "^2.1.0",
+		"xo": "^5.0.1"
 	},
-	"engines": {
-		"node": ">=20"
-	},
+	"source": "index.ts",
 	"@parcel/resolver-default": {
 		"packageExports": true
 	},

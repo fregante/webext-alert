@@ -34,6 +34,5 @@ window.addEventListener('focus', _ => {
 });
 
 window.resizeBy(0, document.body.scrollHeight - window.innerHeight);
-// eslint-disable-next-line unicorn/prefer-global-this
 window.moveTo((screen.width - window.outerWidth) / 2, (screen.height - window.outerHeight) / 2);
 button.focus();
