@@ -36,6 +36,18 @@ If the native `alert` is used, this will block the execution of the background s
 
 If the custom window is used, `webextAlert` will return a promise that resolves when the user closes the window.
 
+### showErrors(callback)
+
+Wraps `callback` so that any error it throws (or any promise it rejects) is logged and shown to the user via `alert()`. Returns a function with the same parameters.
+
+```js
+import {showErrors} from 'webext-alert';
+
+chrome.action.onClicked.addListener(showErrors(async () => {
+	await chrome.permissions.request({origins: ['*://*/*']});
+}));
+```
+
 ### localWebExtAlertHtml(url)
 
 In some cases (Firefox), the message must be loaded via a static HTML page. In this case, `webext-alert` will load the page from `https://webext-alert.vercel.app`. If this is undesirable or if you want the extension to work offline in Firefox as well, you can:
