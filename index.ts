@@ -59,7 +59,6 @@ async function openWithActionPopup(message: string): Promise<void> {
 		});
 		await chrome.action.openPopup();
 		await closePromise;
-		return true;
 	} finally {
 		await chrome.action.setPopup({popup: originalPopup});
 	}
