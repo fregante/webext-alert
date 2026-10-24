@@ -22,7 +22,7 @@
 		"build": "parcel build index.ts && tsc",
 		"demo:build": "parcel build --no-cache",
 		"demo:watch": "parcel watch --no-cache --no-hmr",
-		"prepack": "npm run build",
+		"prepare": "npm run build",
 		"test": "xo && tsc --noEmit",
 		"watch": "tsc --watch"
 	},
@@ -45,7 +45,7 @@
 	],
 	"dependencies": {
 		"webext-detect": "^6.0.0",
-		"webext-events": "^3.1.1"
+		"webext-events": "^4.0.0"
 	},
 	"devDependencies": {
 		"@parcel/config-webextension": "^2.16.4",
@@ -74,26 +74,17 @@
 			"outputFormat": "esmodule",
 			"sourceMap": false
 		},
-		"mv2": {
+		"demo": {
 			"engines": {
 				"browsers": "last 2 Chrome versions"
 			},
-			"source": "demo/mv2/manifest.json",
-			"sourceMap": {
-				"inline": true
-			}
-		},
-		"mv3": {
-			"engines": {
-				"browsers": "last 2 Chrome versions"
-			},
-			"source": "demo/mv3/manifest.json",
+			"source": "demo/manifest.json",
 			"sourceMap": {
 				"inline": true
 			}
 		}
 	},
 	"webExt": {
-		"sourceDir": "dist/mv3"
+		"sourceDir": "dist"
 	}
 }
