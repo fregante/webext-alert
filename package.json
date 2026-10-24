@@ -74,17 +74,17 @@
 			"outputFormat": "esmodule",
 			"sourceMap": false
 		},
-		"mv3": {
+		"demo": {
 			"engines": {
 				"browsers": "last 2 Chrome versions"
 			},
-			"source": "demo/mv3/manifest.json",
+			"source": "demo/manifest.json",
 			"sourceMap": {
 				"inline": true
 			}
 		}
 	},
 	"webExt": {
-		"sourceDir": "dist/mv3"
+		"sourceDir": "dist"
 	}
 }
