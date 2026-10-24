@@ -1,3 +1,10 @@
+// Connect to background to allow it to detect when this popup closes
+try {
+	chrome.runtime.connect({name: 'webext-alert'});
+} catch {
+	// Not available in all contexts (e.g. data URLs in some browsers)
+}
+
 const textElement = document.querySelector('main');
 // The contents may have been pre-set via data URL
 if (!textElement.textContent) {

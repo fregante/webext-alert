@@ -3,7 +3,9 @@
 	"name": "webext-alert",
 	"version": "0.0.0",
 	"manifest_version": 3,
-	"action": {},
+	"action": {
+		"default_popup": "./unrelated-popup.html"
+	},
 	"background": {
 		"service_worker": "./background.js",
 		"scripts": [
