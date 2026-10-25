@@ -50,6 +50,15 @@ In some cases it will display the message using a remote page hosted on `https:/
 1. copy the `html` and `js` files you find in the `web` folder into your extension
 2. call `localWebExtAlertHtml('your/folder/the-local-copied-file.html')` at the top of `background.js`
 
+```js
+// background.js
+import alert, {localWebExtAlertHtml} from 'webext-alert';
+
+localWebExtAlertHtml('webext-alert/index.html');
+
+alert('Hello from background script!');
+```
+
 ## Related
 
 - [Awesome-WebExtensions](https://github.com/fregante/Awesome-WebExtensions) - A curated list of awesome resources for WebExtensions development.
