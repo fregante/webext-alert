@@ -7,8 +7,7 @@ export async function showInActionPopup(message: string, kind: MessageKind, defa
 	try {
 		listener = listenForAnswer(5000);
 		await chrome.action.openPopup();
-		await listener.closed;
-		return listener.getAnswer();
+		return await listener.closed;
 	} finally {
 		listener?.stop();
 		try {

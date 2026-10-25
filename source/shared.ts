@@ -37,7 +37,7 @@ export function listenForAnswer(timeoutMs?: number) {
 		}
 	}
 
-	const closed = new Promise<void>((resolve, reject) => {
+	const closed = new Promise<unknown>((resolve, reject) => {
 		onConnect = port => {
 			if (port.name !== 'webext-alert') {
 				return;
@@ -49,7 +49,9 @@ export function listenForAnswer(timeoutMs?: number) {
 			});
 			port.onDisconnect.addListener(() => {
 				// Give a reconnecting page the chance to deliver its answer
-				setTimeout(resolve, 100);
+				setTimeout(() => {
+					resolve(answer);
+				}, 100);
 			});
 		};
 
@@ -62,5 +64,5 @@ export function listenForAnswer(timeoutMs?: number) {
 		}
 	});
 
-	return {closed, stop, getAnswer: () => answer};
+	return {closed, stop};
 }

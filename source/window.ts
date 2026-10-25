@@ -54,6 +54,7 @@ async function openWindow(url: string): Promise<chrome.windows.Window | void> {
 
 export async function showInWindow(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
 	const listener = listenForAnswer();
+	let answer: unknown;
 	try {
 		let window: chrome.windows.Window | void;
 		if (kind === 'alert') {
@@ -72,9 +73,13 @@ export async function showInWindow(message: string, kind: MessageKind, defaultVa
 
 			await onWindowClose(window.id);
 		}
+
+		if (kind !== 'alert' && window?.id !== undefined) {
+			answer = await listener.closed;
+		}
 	} finally {
 		listener.stop();
 	}
 
-	return listener.getAnswer();
+	return answer;
 }
