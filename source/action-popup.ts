@@ -11,6 +11,8 @@ export async function showInActionPopup(message: string, kind: MessageKind, defa
 		return listener.getAnswer();
 	} finally {
 		listener?.stop();
-		await chrome.action.setPopup({popup: originalActionPopup});
+		try {
+			await chrome.action.setPopup({popup: originalActionPopup});
+		} catch {}
 	}
 }
