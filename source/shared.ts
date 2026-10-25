@@ -43,12 +43,13 @@ export function listenForAnswer(timeoutMs?: number) {
 				return;
 			}
 
-			stop();
+			clearTimeout(timeout);
 			port.onMessage.addListener((message: unknown) => {
 				answer = (message as {answer?: unknown}).answer;
 			});
 			port.onDisconnect.addListener(() => {
-				resolve();
+				// Give a reconnecting page the chance to deliver its answer
+				setTimeout(resolve, 100);
 			});
 		};
 
