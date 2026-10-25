@@ -26,12 +26,14 @@ npm install webext-alert
 ## Usage
 
 ```js
-import {alert} from 'webext-alert';
+import {alert, prompt, confirm} from 'webext-alert';
 
-alert('Hello from background script!');
+await alert('Hello from background script!');
+await prompt('What is your name?', 'Anonymous');
+await confirm('Are you sure?');
 ```
 
-<img width="420" alt="alert from service worker in MV3" src="https://github.com/fregante/webext-alert/assets/1402241/bc25c6dc-633a-40f9-91f2-04d0cca16300">
+<img alt="alert from service worker in MV3" src="https://github.com/user-attachments/assets/ba6ae04f-3219-4f58-af0a-2d3f348d15e3">
 
 ## API
 
