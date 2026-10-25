@@ -64,8 +64,7 @@ const size = {
 	top: Math.round((screen.height - document.body.scrollHeight) / 2),
 };
 window.moveTo(size.left, size.top);
+(kind === 'prompt' ? input : okButton).focus();
 if (hasExtensionApi) {
 	chrome.runtime.sendMessage({webextAlert: size});
 }
-
-(kind === 'prompt' ? input : okButton).focus();

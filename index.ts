@@ -123,7 +123,7 @@ async function openPopup(url: string): Promise<chrome.windows.Window | void> {
 
 async function showPopup(kind: PopupKind, message: string, defaultValue = ''): Promise<unknown> {
 	// The answer is sent back via `chrome.runtime`, which the remote page can't use
-	if (kind !== 'alert' && htmlFileUrl.origin !== new URL(chrome.runtime.getURL('/')).origin) {
+	if (kind !== 'alert' && !htmlFileUrl.protocol.endsWith('extension:')) {
 		throw new Error(`webext-alert: \`${kind}()\` requires a local page, see \`localWebExtAlertHtml()\``);
 	}
 
