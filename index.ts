@@ -162,6 +162,7 @@ async function showPopup(kind: PopupKind, message: string, defaultValue = ''): P
 }
 
 // `alert()`, `confirm()` and `prompt()` are not available in any service worker or background page
+// They may exist in background pages (Firefox, Safari), but they silently fail
 const isNative = !isBackgroundWorker() && !isBackgroundPage();
 
 export const alert = isNative
