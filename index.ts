@@ -159,22 +159,11 @@ async function showPopup(kind: PopupKind, message: string, defaultValue = ''): P
 // `alert()`, `confirm()` and `prompt()` are not available in any service worker or background page
 const isNative = !isBackgroundWorker() && !isBackgroundPage();
 
-async function popupAlert(message = ''): Promise<void> {
-	await showPopup('alert', message);
-}
-
-async function popupConfirm(message = ''): Promise<boolean> {
-	return await showPopup('confirm', message) === true;
-}
-
-async function popupPrompt(message = '', defaultValue = ''): Promise<string | null> {
-	const answer = await showPopup('prompt', message, defaultValue);
-	return typeof answer === 'string' ? answer : null;
-}
-
 export const alert = isNative
 	? globalThis.alert ?? console.log
-	: popupAlert;
+	: async (message = '') => {
+		await showPopup('alert', message);
+	};
 
 /**
  Like `confirm()`, but also available where the native one isn't.
@@ -183,7 +172,7 @@ export const alert = isNative
 */
 export const confirm = isNative
 	? globalThis.confirm ?? (() => false)
-	: popupConfirm;
+	: async (message = '') => await showPopup('confirm', message) === true;
 
 /**
  Like `prompt()`, but also available where the native one isn't.
@@ -192,7 +181,10 @@ export const confirm = isNative
 */
 export const prompt = isNative
 	? globalThis.prompt ?? (() => null)
-	: popupPrompt;
+	: async (message = '', defaultValue = '') => {
+		const answer = await showPopup('prompt', message, defaultValue);
+		return typeof answer === 'string' ? answer : null;
+	};
 
 /**
  Change the HTML page to be used in certain scenarios (Firefox).

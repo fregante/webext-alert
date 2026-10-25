@@ -43,11 +43,13 @@ Uses `alert()` wherever possible, but falls back to a custom window with the sam
 
 If the native `alert` is used, this will block the execution of the background script until the user closes the alert.
 
-If the custom window is used, `webextAlert` will return a promise that resolves when the user closes the window.
+If the custom window is used, `alert` will return a promise that resolves when the user closes the window.
 
 ### confirm(message)
 
-Returns a promise that resolves to `true` if the user clicked OK, `false` if they cancelled or closed the popup.
+Uses `confirm()` wherever possible, but falls back to a custom window with the same content.
+
+Returns `true` if the user clicked OK, `false` if they cancelled or closed the window. If the custom window is used, it returns a promise that resolves to that value, so always `await` it.
 
 ```js
 import {confirm} from 'webext-alert';
@@ -59,7 +61,9 @@ if (await confirm('Delete everything?')) {
 
 ### prompt(message, defaultValue?)
 
-Returns a promise that resolves to the text entered by the user, or `null` if they cancelled or closed the popup.
+Uses `prompt()` wherever possible, but falls back to a custom window with the same content.
+
+Returns the text entered by the user, or `null` if they cancelled or closed the window. If the custom window is used, it returns a promise that resolves to that value, so always `await` it.
 
 ```js
 import {prompt} from 'webext-alert';
