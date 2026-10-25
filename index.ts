@@ -158,35 +158,40 @@ async function showPopup(kind: PopupKind, message: string, defaultValue = ''): P
 // `alert()` is not available in any background context in Firefox and Safari
 const shouldUsePopup = isBackgroundWorker() || (!isChrome() && isBackgroundPage());
 
-export async function alert(message = ''): Promise<void> {
-	await (shouldUsePopup
-		? showPopup('alert', message)
-		// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression -- Native `alert()` returns void
-		: (globalThis.alert ?? console.log)(message));
+async function popupAlert(message = ''): Promise<void> {
+	await showPopup('alert', message);
 }
+
+async function popupConfirm(message = ''): Promise<boolean> {
+	return await showPopup('confirm', message) === true;
+}
+
+async function popupPrompt(message = '', defaultValue = ''): Promise<string | null> {
+	const answer = await showPopup('prompt', message, defaultValue);
+	return typeof answer === 'string' ? answer : null;
+}
+
+export const alert = shouldUsePopup
+	? popupAlert
+	: globalThis.alert ?? console.log;
 
 /**
  Like `confirm()`, but also available where the native one isn't.
 
  @returns `true` if the user clicked OK, `false` if they cancelled or closed the popup
 */
-export async function confirm(message = ''): Promise<boolean> {
-	return shouldUsePopup
-		? await showPopup('confirm', message) === true
-		: globalThis.confirm?.(message) ?? false;
-}
+export const confirm = shouldUsePopup
+	? popupConfirm
+	: async (message = '') => globalThis.confirm?.(message) ?? false;
 
 /**
  Like `prompt()`, but also available where the native one isn't.
 
  @returns The text entered by the user, or `null` if they cancelled or closed the popup
 */
-export async function prompt(message = '', defaultValue = ''): Promise<string | null> {
-	const answer = shouldUsePopup
-		? await showPopup('prompt', message, defaultValue)
-		: globalThis.prompt?.(message, defaultValue);
-	return typeof answer === 'string' ? answer : null;
-}
+export const prompt = shouldUsePopup
+	? popupPrompt
+	: async (message = '', defaultValue = '') => globalThis.prompt?.(message, defaultValue) ?? null;
 
 /**
  Change the HTML page to be used in certain scenarios (Firefox).
