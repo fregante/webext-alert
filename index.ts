@@ -122,11 +122,6 @@ async function openPopup(url: string): Promise<chrome.windows.Window | void> {
 async function showPopup(kind: PopupKind, message: string, defaultValue = ''): Promise<unknown> {
 	message = message.trim();
 
-	// The answer can only be sent back by an extension page, not by a `data:` URL or a remote page
-	if (kind !== 'alert' && !htmlFileUrl.protocol.endsWith('extension:')) {
-		throw new Error(`webext-alert: ${kind}() requires a local page, call localWebExtAlertHtml() first`);
-	}
-
 	try {
 		return await openWithActionPopup(message, kind, defaultValue);
 	} catch {
@@ -176,8 +171,6 @@ export {webextAlert as alert};
 /**
  Like `confirm()`, but also available where the native one isn't.
 
- Outside of the native `confirm()` contexts, `localWebExtAlertHtml()` must be called first.
-
  @returns `true` if the user clicked OK, `false` if they cancelled or closed the popup
 */
 // eslint-disable-next-line unicorn/consistent-boolean-name -- Same name as the native `confirm()`
@@ -189,8 +182,6 @@ export async function confirm(message = ''): Promise<boolean> {
 
 /**
  Like `prompt()`, but also available where the native one isn't.
-
- Outside of the native `prompt()` contexts, `localWebExtAlertHtml()` must be called first.
 
  @returns The text entered by the user, or `null` if they cancelled or closed the popup
 */

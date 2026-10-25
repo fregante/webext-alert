@@ -47,8 +47,6 @@ If the custom window is used, `webextAlert` will return a promise that resolves 
 
 Returns a promise that resolves to `true` if the user clicked OK, `false` if they cancelled or closed the popup.
 
-The custom window must be able to send the answer back, so it requires a local page: call `localWebExtAlertHtml()` first (see below).
-
 ```js
 import {confirm} from 'webext-alert';
 
@@ -59,7 +57,7 @@ if (await confirm('Delete everything?')) {
 
 ### prompt(message, defaultValue?)
 
-Returns a promise that resolves to the text entered by the user, or `null` if they cancelled or closed the popup. It requires `localWebExtAlertHtml()` as well.
+Returns a promise that resolves to the text entered by the user, or `null` if they cancelled or closed the popup.
 
 ```js
 import {prompt} from 'webext-alert';
