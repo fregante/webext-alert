@@ -171,7 +171,7 @@ const webextAlert = shouldUsePopup
 	? popupAlert
 	: globalThis.alert ?? console.log;
 
-export default webextAlert;
+export {webextAlert as alert};
 
 /**
  Like `confirm()`, but also available where the native one isn't.

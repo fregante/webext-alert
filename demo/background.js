@@ -1,4 +1,9 @@
-import alert, {confirm, prompt, localWebExtAlertHtml} from 'webext-alert';
+import {
+	alert,
+	confirm,
+	prompt,
+	localWebExtAlertHtml,
+} from 'webext-alert';
 import localPage from 'url:./webext-alert.html';
 
 localWebExtAlertHtml(localPage);
