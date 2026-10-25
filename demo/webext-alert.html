@@ -6,7 +6,14 @@
 <title>Message</title>
 <link href="../web/style.css" rel="stylesheet">
 <body>
-	<main></main>
-	<button type="submit">Ok</button>
+	<form method="dialog">
+		<main></main>
+		<!-- eslint-disable-next-line @html-eslint/require-input-label -->
+		<input hidden>
+		<div class="buttons">
+			<button type="button" hidden>Cancel</button>
+			<button type="submit">Ok</button>
+		</div>
+	</form>
 	<script src="../web/main.js"></script>
 </body>

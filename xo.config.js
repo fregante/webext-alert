@@ -16,6 +16,8 @@ const xoConfig = [
 		},
 		rules: {
 			'no-alert': 'off',
+			'unicorn/consistent-boolean-name': 'off',
+			'@typescript-eslint/no-restricted-types': 'off',
 		},
 	},
 ];

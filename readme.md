@@ -26,12 +26,14 @@ npm install webext-alert
 ## Usage
 
 ```js
-import alert from 'webext-alert';
+import {alert, prompt, confirm} from 'webext-alert';
 
-alert('Hello from background script!');
+await alert('Hello from background script!');
+await prompt('What is your name?', 'Anonymous');
+await confirm('Are you sure?');
 ```
 
-<img width="420" alt="alert from service worker in MV3" src="https://github.com/fregante/webext-alert/assets/1402241/bc25c6dc-633a-40f9-91f2-04d0cca16300">
+<img alt="alert from service worker in MV3" src="https://github.com/user-attachments/assets/ba6ae04f-3219-4f58-af0a-2d3f348d15e3">
 
 ## API
 
@@ -41,18 +43,52 @@ Uses `alert()` wherever possible, but falls back to a custom window with the sam
 
 If the native `alert` is used, this will block the execution of the background script until the user closes the alert.
 
-If the custom window is used, `webextAlert` will return a promise that resolves when the user closes the window.
+If the custom window is used, `alert` will return a promise that resolves when the user closes the window.
+
+### confirm(message)
+
+Uses `confirm()` wherever possible, but falls back to a custom window with the same content.
+
+> [!IMPORTANT]
+> The custom window requires [`localWebExtAlertHtml()`](#localwebextalerthtmlurl), otherwise it throws.
+
+Returns `true` if the user clicked OK, `false` if they cancelled or closed the window. If the custom window is used, it returns a promise that resolves to that value, so always `await` it.
+
+```js
+import {confirm} from 'webext-alert';
+
+if (await confirm('Delete everything?')) {
+	// …
+}
+```
+
+### prompt(message, defaultValue?)
+
+Uses `prompt()` wherever possible, but falls back to a custom window with the same content.
+
+> [!IMPORTANT]
+> The custom window requires [`localWebExtAlertHtml()`](#localwebextalerthtmlurl), otherwise it throws.
+
+Returns the text entered by the user, or `null` if they cancelled or closed the window. If the custom window is used, it returns a promise that resolves to that value, so always `await` it.
+
+```js
+import {prompt} from 'webext-alert';
+
+const name = await prompt('What is your name?', 'Anonymous');
+```
 
 ### localWebExtAlertHtml(url)
 
-In some cases it will display the message using a remote page hosted on `https://webext-alert.vercel.app`. The source of this page can be found in the [`./web` folder](./web). If you prefer having a local version, you can:
+`alert()` may display the message using a remote page hosted on `https://webext-alert.vercel.app`. The source of this page can be found in the [`./web` folder](./web). The remote page can't communicate with your extension, so `confirm()` and `prompt()` **require** a local copy when the custom window is used (service workers, Firefox, Safari). For `alert()` it's optional, but it adds offline support.
+
+To use a local copy:
 
 1. copy the files from the [`./web` folder](./web) into your extension
 2. call `localWebExtAlertHtml` at the top of `background.js`
 
 ```js
 // background.js
-import alert, {localWebExtAlertHtml} from 'webext-alert';
+import {alert, localWebExtAlertHtml} from 'webext-alert';
 
 localWebExtAlertHtml('your/folder/the-local-copied-file.html');
 
