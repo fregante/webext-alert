@@ -122,6 +122,11 @@ async function openPopup(url: string): Promise<chrome.windows.Window | void> {
 }
 
 async function showPopup(kind: PopupKind, message: string, defaultValue = ''): Promise<unknown> {
+	// The answer is sent back via `chrome.runtime`, which the remote page can't use
+	if (kind !== 'alert' && htmlFileUrl.origin !== new URL(chrome.runtime.getURL('/')).origin) {
+		throw new Error(`webext-alert: \`${kind}()\` requires a local page, see \`localWebExtAlertHtml()\``);
+	}
+
 	message = message.trim();
 
 	try {
@@ -168,6 +173,8 @@ export const alert = isNative
 /**
  Like `confirm()`, but also available where the native one isn't.
 
+ Where the native one isn't available, it requires `localWebExtAlertHtml()` to be called first, otherwise it throws.
+
  @returns `true` if the user clicked OK, `false` if they cancelled or closed the popup
 */
 export const confirm = isNative
@@ -176,6 +183,8 @@ export const confirm = isNative
 
 /**
  Like `prompt()`, but also available where the native one isn't.
+
+ Where the native one isn't available, it requires `localWebExtAlertHtml()` to be called first, otherwise it throws.
 
  @returns The text entered by the user, or `null` if they cancelled or closed the popup
 */
@@ -190,7 +199,9 @@ export const prompt = isNative
  Change the HTML page to be used in certain scenarios (Firefox).
  This can be used to add offline support for Firefox.
 
- @param url If not provided, the default URL will be used
+ It's required for `confirm()` and `prompt()` where the native ones aren't available, because the remote page can't send the answer back to the extension.
+
+ @param url Path of a copy of the page, included in your extension. If not provided, the default remote URL will be used
 */
 export function localWebExtAlertHtml(url = defaultUrl): void {
 	htmlFileUrl = new URL(url, chrome.runtime.getURL('/'));

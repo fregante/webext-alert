@@ -1,10 +1,8 @@
+// Not available in all contexts (e.g. data URLs, or the remote page)
+const hasExtensionApi = Boolean(globalThis.chrome?.runtime?.id);
+
 // Connect to background to allow it to detect when this popup closes
-let port;
-try {
-	port = chrome.runtime.connect({name: 'webext-alert'});
-} catch {
-	// Not available in all contexts (e.g. data URLs in some browsers)
-}
+const port = hasExtensionApi ? chrome.runtime.connect({name: 'webext-alert'}) : undefined;
 
 const parameters = new URLSearchParams(location.search);
 const kind = parameters.get('kind') ?? 'alert';
@@ -66,5 +64,8 @@ const size = {
 	top: Math.round((screen.height - document.body.scrollHeight) / 2),
 };
 window.moveTo(size.left, size.top);
-chrome.runtime.sendMessage({webextAlert: size});
+if (hasExtensionApi) {
+	chrome.runtime.sendMessage({webextAlert: size});
+}
+
 (kind === 'prompt' ? input : okButton).focus();
