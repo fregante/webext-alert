@@ -83,12 +83,20 @@ const name = await prompt('What is your name?', 'Anonymous');
 
 ### showErrors(callback)
 
-Wraps `callback` so that any error it throws (or any promise it rejects) is logged and shown to the user via `alert()`. Returns a function with the same parameters.
+Runs `callback` and, if it throws (or returns a rejected promise), shows the error to the user via `alert()` and rethrows it. Returns whatever `callback` returns.
 
 ```js
 import {showErrors} from 'webext-alert';
 
-chrome.action.onClicked.addListener(showErrors(async () => {
+await showErrors(async () => {
+	await chrome.permissions.request({origins: ['*://*/*']});
+});
+```
+
+To use it as a listener, wrap the call:
+
+```js
+chrome.action.onClicked.addListener(() => showErrors(async () => {
 	await chrome.permissions.request({origins: ['*://*/*']});
 }));
 ```

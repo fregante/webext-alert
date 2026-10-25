@@ -209,19 +209,18 @@ export function localWebExtAlertHtml(url = defaultUrl): void {
 }
 
 /**
- Wraps a callback so that any error it throws (or any promise it rejects) is shown to the user via `alert()`.
+ Runs the callback and, if it throws (or returns a rejected promise), shows the error to the user via `alert()` and rethrows it.
 
- @param callback The function to wrap, sync or async
+ To use it as a listener, wrap the call: `() => showErrors(callback)`.
+
+ @param callback The function to run, sync or async
+ @returns Whatever the callback returns
 */
-export function showErrors<Arguments extends unknown[]>(
-	callback: (...arguments_: Arguments) => unknown,
-): (...arguments_: Arguments) => Promise<void> {
-	return async (...arguments_) => {
-		try {
-			await callback(...arguments_);
-		} catch (error) {
-			await alert(error instanceof Error ? error.message : String(error));
-			throw error;
-		}
-	};
+export async function showErrors<ReturnType>(callback: () => ReturnType): Promise<Awaited<ReturnType>> {
+	try {
+		return await callback();
+	} catch (error) {
+		await alert(error instanceof Error ? error.message : String(error));
+		throw error;
+	}
 }
