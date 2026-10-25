@@ -3,8 +3,8 @@
 > WebExtension module: alert() for background pages/workers in Web Extensions
 
 - Browsers: Chrome, Firefox, Safari
-- Manifest: v2 and v3
-- Contexts: background page
+- Manifest: v3
+- Contexts: background page, service worker
 
 Every function tries these in order until one works:
 
