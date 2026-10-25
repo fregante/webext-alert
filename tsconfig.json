@@ -1,12 +1,14 @@
 {
 	"extends": "@sindresorhus/tsconfig",
 	"compilerOptions": {
+		"rootDir": "source",
 		"outDir": ".",
 		"emitDeclarationOnly": true,
 		"types": ["chrome"]
 	},
 	"files": [
-		"index.ts",
-		"bundle-text.d.ts"
+		"source/index.ts",
+		"source/port.ts",
+		"source/bundle-text.d.ts"
 	]
 }
