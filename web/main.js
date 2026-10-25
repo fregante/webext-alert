@@ -21,8 +21,8 @@ if (!textElement.textContent) {
 }
 
 // The data URL page only has the Ok button
-const button = document.querySelector('button:last-of-type');
-const cancel = document.querySelector('button[hidden]');
+const button = document.querySelector('button[type="submit"]');
+const cancel = document.querySelector('button[type="button"]');
 const input = document.querySelector('input');
 
 function answer(value) {

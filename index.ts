@@ -30,7 +30,7 @@ function getPage(message = ''): string {
 		<style>${css}</style>
 		<body>
 			<main>${message}</main>
-			<button>Ok</button>
+			<button type="submit">Ok</button>
 		</body>
 		<script>${js}</script>
 	`;
