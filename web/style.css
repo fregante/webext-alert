@@ -44,3 +44,7 @@ input {
 	box-sizing: border-box;
 	width: 100%;
 }
+
+[hidden] {
+	display: none !important;
+}
