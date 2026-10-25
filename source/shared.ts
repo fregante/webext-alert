@@ -29,26 +29,38 @@ export function listenForAnswer(timeoutMs?: number) {
 	let answer: unknown;
 	let timeout: ReturnType<typeof setTimeout> | undefined;
 	let onConnect: ((port: chrome.runtime.Port) => void) | undefined;
+	let onMessage: ((message: unknown) => void) | undefined;
 
 	function stop() {
 		clearTimeout(timeout);
 		if (onConnect) {
 			chrome.runtime.onConnect.removeListener(onConnect);
 		}
+
+		if (onMessage) {
+			chrome.runtime.onMessage.removeListener(onMessage);
+		}
 	}
 
 	const closed = new Promise<unknown>((resolve, reject) => {
+		onMessage = message => {
+			if (typeof message !== 'object' || message === null || !('webextAlertAnswer' in message)) {
+				return;
+			}
+
+			answer = message.webextAlertAnswer;
+		};
+
+		chrome.runtime.onMessage.addListener(onMessage);
+
 		onConnect = port => {
 			if (port.name !== 'webext-alert') {
 				return;
 			}
 
 			clearTimeout(timeout);
-			port.onMessage.addListener((message: unknown) => {
-				answer = (message as {answer?: unknown}).answer;
-			});
 			port.onDisconnect.addListener(() => {
-				// Give a reconnecting page the chance to deliver its answer
+				// Give the page a chance to deliver its answer before treating the disconnect as dismissal
 				setTimeout(() => {
 					resolve(answer);
 				}, 100);

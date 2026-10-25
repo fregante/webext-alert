@@ -2,7 +2,7 @@
 const hasExtensionApi = Boolean(globalThis.chrome?.runtime?.id);
 
 // Connect to background to allow it to detect when this popup closes
-let port = hasExtensionApi ? chrome.runtime.connect({name: 'webext-alert'}) : undefined;
+const port = hasExtensionApi ? chrome.runtime.connect({name: 'webext-alert'}) : undefined;
 
 const parameters = new URLSearchParams(location.search);
 const kind = parameters.get('kind') ?? 'alert';
@@ -23,16 +23,16 @@ const okButton = document.querySelector('button[type="submit"]');
 const cancel = document.querySelector('button[type="button"]');
 const input = document.querySelector('input');
 
-function answer(value) {
+async function answer(value) {
 	try {
-		port?.postMessage({answer: value});
-	} catch {
-		// Safari may disconnect the port early; reconnect to deliver the answer
-		try {
-			port = chrome.runtime.connect({name: 'webext-alert'});
-			port.postMessage({answer: value});
-		} catch {}
-	}
+		if (hasExtensionApi) {
+			await chrome.runtime.sendMessage({webextAlertAnswer: value});
+		}
+	} catch {}
+
+	try {
+		port?.disconnect();
+	} catch {}
 
 	window.close();
 }
