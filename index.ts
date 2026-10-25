@@ -154,26 +154,22 @@ async function showPopup(kind: PopupKind, message: string, defaultValue = ''): P
 	return listener.getAnswer();
 }
 
-async function popupAlert(message: string): Promise<void> {
-	await showPopup('alert', message);
-}
-
 // `alert()` is not available in any service worker
 // `alert()` is not available in any background context in Firefox and Safari
 const shouldUsePopup = isBackgroundWorker() || (!isChrome() && isBackgroundPage());
 
-const webextAlert = shouldUsePopup
-	? popupAlert
-	: globalThis.alert ?? console.log;
-
-export {webextAlert as alert};
+export async function alert(message = ''): Promise<void> {
+	await (shouldUsePopup
+		? showPopup('alert', message)
+		// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression -- Native `alert()` returns void
+		: (globalThis.alert ?? console.log)(message));
+}
 
 /**
  Like `confirm()`, but also available where the native one isn't.
 
  @returns `true` if the user clicked OK, `false` if they cancelled or closed the popup
 */
-// eslint-disable-next-line unicorn/consistent-boolean-name -- Same name as the native `confirm()`
 export async function confirm(message = ''): Promise<boolean> {
 	return shouldUsePopup
 		? await showPopup('confirm', message) === true
@@ -185,13 +181,10 @@ export async function confirm(message = ''): Promise<boolean> {
 
  @returns The text entered by the user, or `null` if they cancelled or closed the popup
 */
-// eslint-disable-next-line @typescript-eslint/no-restricted-types -- Same return value as the native `prompt()`
 export async function prompt(message = '', defaultValue = ''): Promise<string | null> {
-	if (!shouldUsePopup) {
-		return globalThis.prompt?.(message, defaultValue) ?? null;
-	}
-
-	const answer = await showPopup('prompt', message, defaultValue);
+	const answer = shouldUsePopup
+		? await showPopup('prompt', message, defaultValue)
+		: globalThis.prompt?.(message, defaultValue);
 	return typeof answer === 'string' ? answer : null;
 }
 
