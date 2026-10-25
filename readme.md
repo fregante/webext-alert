@@ -45,7 +45,7 @@ If the custom window is used, `webextAlert` will return a promise that resolves 
 
 ### localWebExtAlertHtml(url)
 
-The action popup always loads a static HTML page, and the window falls back to it when it can't use a `data:` URL (Firefox). By default, `webext-alert` loads the page from `https://webext-alert.vercel.app`. If this is undesirable or if you want the extension to work offline in Firefox as well, you can:
+In some cases, loading a remote page is required. If you prefer having a local version, you can:
 
 1. copy the `html` and `js` files you find in the `web` folder into your extension
 2. call `localWebExtAlertHtml('your/folder/the-local-copied-file.html')` at the top of `background.js`
