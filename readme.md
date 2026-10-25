@@ -26,11 +26,15 @@ npm install webext-alert
 ## Usage
 
 ```js
-import {alert, prompt, confirm} from 'webext-alert';
+import {alert, prompt, confirm, showErrors} from 'webext-alert';
 
 await alert('Hello from background script!');
 await prompt('What is your name?', 'Anonymous');
 await confirm('Are you sure?');
+
+await showErrors(async () => {
+	throw new Error('Something went wrong!');
+});
 ```
 
 <img alt="alert from service worker in MV3" src="https://github.com/user-attachments/assets/ba6ae04f-3219-4f58-af0a-2d3f348d15e3">
@@ -75,6 +79,26 @@ Returns the text entered by the user, or `null` if they cancelled or closed the 
 import {prompt} from 'webext-alert';
 
 const name = await prompt('What is your name?', 'Anonymous');
+```
+
+### showErrors(callback)
+
+Runs `callback` and, if it throws (or returns a rejected promise), shows the error to the user via `alert()` and rethrows it. Returns whatever `callback` returns.
+
+```js
+import {showErrors} from 'webext-alert';
+
+await showErrors(async () => {
+	await chrome.permissions.request({origins: ['*://*/*']});
+});
+```
+
+To use it as a listener, wrap the call:
+
+```js
+chrome.action.onClicked.addListener(() => showErrors(async () => {
+	await chrome.permissions.request({origins: ['*://*/*']});
+}));
 ```
 
 ### localWebExtAlertHtml(url)

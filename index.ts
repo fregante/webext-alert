@@ -207,3 +207,20 @@ export const prompt = isNative
 export function localWebExtAlertHtml(url = defaultUrl): void {
 	htmlFileUrl = new URL(url, chrome.runtime.getURL('/'));
 }
+
+/**
+ Runs the callback and, if it throws (or returns a rejected promise), shows the error to the user via `alert()` and rethrows it.
+
+ To use it as a listener, wrap the call: `() => showErrors(callback)`.
+
+ @param callback The function to run, sync or async
+ @returns Whatever the callback returns
+*/
+export async function showErrors<ReturnType>(callback: () => ReturnType): Promise<Awaited<ReturnType>> {
+	try {
+		return await callback();
+	} catch (error) {
+		await alert(error instanceof Error ? error.message : String(error));
+		throw error;
+	}
+}
