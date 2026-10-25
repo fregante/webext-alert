@@ -33,11 +33,6 @@ function answer(value) {
 if (kind === 'prompt') {
 	input.hidden = false;
 	input.value = parameters.get('default') ?? '';
-	input.addEventListener('keydown', event => {
-		if (event.key === 'Enter') {
-			okButton.click();
-		}
-	});
 }
 
 if (kind !== 'alert') {
@@ -47,7 +42,9 @@ if (kind !== 'alert') {
 	});
 }
 
-okButton.addEventListener('click', _ => {
+// Also handles Enter in the input
+document.querySelector('form').addEventListener('submit', event => {
+	event.preventDefault();
 	answer(kind === 'prompt' ? input.value : true);
 });
 

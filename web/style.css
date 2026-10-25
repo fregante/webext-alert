@@ -26,6 +26,10 @@ button {
 	min-height: 2em;
 }
 
+form {
+	display: contents;
+}
+
 main {
 	white-space: pre-wrap;
 }

@@ -29,8 +29,10 @@ function getPage(message = ''): string {
 		<title>${chrome.runtime.getManifest().name}</title>
 		<style>${css}</style>
 		<body>
-			<main>${message}</main>
-			<button type="submit">Ok</button>
+			<form method="dialog">
+				<main>${message}</main>
+				<button type="submit">Ok</button>
+			</form>
 		</body>
 		<script>${js}</script>
 	`;
@@ -154,9 +156,8 @@ async function showPopup(kind: PopupKind, message: string, defaultValue = ''): P
 	return listener.getAnswer();
 }
 
-// `alert()` is not available in any service worker
-// `alert()` is not available in any background context in Firefox and Safari
-const shouldUsePopup = isBackgroundWorker() || (!isChrome() && isBackgroundPage());
+// `alert()`, `confirm()` and `prompt()` are not available in any service worker or background page
+const isNative = !isBackgroundWorker() && !isBackgroundPage();
 
 async function popupAlert(message = ''): Promise<void> {
 	await showPopup('alert', message);
@@ -171,27 +172,27 @@ async function popupPrompt(message = '', defaultValue = ''): Promise<string | nu
 	return typeof answer === 'string' ? answer : null;
 }
 
-export const alert = shouldUsePopup
-	? popupAlert
-	: globalThis.alert ?? console.log;
+export const alert = isNative
+	? globalThis.alert ?? console.log
+	: popupAlert;
 
 /**
  Like `confirm()`, but also available where the native one isn't.
 
  @returns `true` if the user clicked OK, `false` if they cancelled or closed the popup
 */
-export const confirm = shouldUsePopup
-	? popupConfirm
-	: globalThis.confirm ?? (() => false);
+export const confirm = isNative
+	? globalThis.confirm ?? (() => false)
+	: popupConfirm;
 
 /**
  Like `prompt()`, but also available where the native one isn't.
 
  @returns The text entered by the user, or `null` if they cancelled or closed the popup
 */
-export const prompt = shouldUsePopup
-	? popupPrompt
-	: globalThis.prompt ?? (() => null);
+export const prompt = isNative
+	? globalThis.prompt ?? (() => null)
+	: popupPrompt;
 
 /**
  Change the HTML page to be used in certain scenarios (Firefox).
