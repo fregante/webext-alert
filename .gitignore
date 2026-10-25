@@ -10,7 +10,6 @@ logs
 *.map
 index.js
 index.d.ts
-port.d.ts
 dist
 dist-web
 .parcel-cache

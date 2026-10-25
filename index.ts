@@ -1,8 +1,7 @@
 import oneEvent from 'webext-events/one-event';
 import {isBackgroundWorker, isChrome, isBackgroundPage} from 'webext-detect';
-import css from 'bundle-text:../web/style.css';
-import js from 'bundle-text:../web/main.js';
-import {listenForPopup} from './port.js';
+import css from 'bundle-text:./web/style.css';
+import js from 'bundle-text:./web/main.js';
 
 const defaultUrl = 'https://webext-alert.vercel.app/';
 let htmlFileUrl = new URL(defaultUrl);
@@ -47,6 +46,46 @@ function getHtmlFileUrl(message: string, kind: PopupKind = 'alert', defaultValue
 	}
 
 	return url.href;
+}
+
+// Register the listener before opening the popup to avoid race conditions
+function listenForPopup(timeoutMs?: number) {
+	let answer: unknown;
+	let timeout: ReturnType<typeof setTimeout> | undefined;
+	let onConnect: ((port: chrome.runtime.Port) => void) | undefined;
+
+	function stop() {
+		clearTimeout(timeout);
+		if (onConnect) {
+			chrome.runtime.onConnect.removeListener(onConnect);
+		}
+	}
+
+	const closed = new Promise<void>((resolve, reject) => {
+		onConnect = port => {
+			if (port.name !== 'webext-alert') {
+				return;
+			}
+
+			stop();
+			port.onMessage.addListener((message: unknown) => {
+				answer = (message as {answer?: unknown}).answer;
+			});
+			port.onDisconnect.addListener(() => {
+				resolve();
+			});
+		};
+
+		chrome.runtime.onConnect.addListener(onConnect);
+		if (timeoutMs !== undefined) {
+			timeout = setTimeout(() => {
+				stop();
+				reject(new Error('webext-alert: popup did not connect in time'));
+			}, timeoutMs);
+		}
+	});
+
+	return {closed, stop, getAnswer: () => answer};
 }
 
 async function openWithActionPopup(message: string, kind: PopupKind, defaultValue: string): Promise<unknown> {
