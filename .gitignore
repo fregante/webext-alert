@@ -10,6 +10,9 @@ logs
 *.map
 index.js
 index.d.ts
+action-popup.d.ts
+shared.d.ts
+window.d.ts
 dist
 dist-web
 .parcel-cache
