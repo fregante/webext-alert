@@ -45,7 +45,7 @@ If the custom window is used, `webextAlert` will return a promise that resolves 
 
 ### localWebExtAlertHtml(url)
 
-In some cases, loading a remote page (`https://webext-alert.vercel.app`) is required. If you prefer having a local version, you can:
+In some cases it will display the message using a remote page hosted on `https://webext-alert.vercel.app`). The source of this page can be found in the [`./web` folder](./web). If you prefer having a local version, you can:
 
 1. copy the `html` and `js` files you find in the `web` folder into your extension
 2. call `localWebExtAlertHtml('your/folder/the-local-copied-file.html')` at the top of `background.js`
