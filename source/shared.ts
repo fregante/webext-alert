@@ -25,26 +25,18 @@ export function getHtmlFileUrl(message: string, kind: MessageKind = 'alert', def
 }
 
 // Register the listener before opening the action popup or window to avoid race conditions
-export async function listenForAnswer(signal: AbortSignal): Promise<unknown> {
-	if (signal.aborted) {
-		throw signal.reason instanceof Error ? signal.reason : new Error('Aborted');
-	}
+export async function listenForAnswer(timeoutMs?: number): Promise<unknown> {
+	let answer: unknown;
+	let timeout: ReturnType<typeof setTimeout> | undefined;
+	let disconnectTimeout: ReturnType<typeof setTimeout> | undefined;
 
 	return new Promise((resolve, reject) => {
-		let answer: unknown;
-		let disconnectTimeout: ReturnType<typeof setTimeout> | undefined;
-
 		function cleanup() {
+			clearTimeout(timeout);
 			clearTimeout(disconnectTimeout);
 			chrome.runtime.onConnect.removeListener(onConnect);
 			chrome.runtime.onMessage.removeListener(onMessage);
-			signal.removeEventListener('abort', onAbort);
 		}
-
-		const onAbort = () => {
-			cleanup();
-			reject(signal.reason instanceof Error ? signal.reason : new Error('Aborted'));
-		};
 
 		const onMessage = (message: unknown) => {
 			if (typeof message !== 'object' || message === null || !('webextAlertAnswer' in message)) {
@@ -59,6 +51,7 @@ export async function listenForAnswer(signal: AbortSignal): Promise<unknown> {
 				return;
 			}
 
+			clearTimeout(timeout);
 			port.onDisconnect.addListener(() => {
 				// Give the page a chance to deliver its answer before treating the disconnect as dismissal
 				disconnectTimeout = setTimeout(() => {
@@ -68,8 +61,13 @@ export async function listenForAnswer(signal: AbortSignal): Promise<unknown> {
 			});
 		};
 
-		signal.addEventListener('abort', onAbort, {once: true});
 		chrome.runtime.onMessage.addListener(onMessage);
 		chrome.runtime.onConnect.addListener(onConnect);
+		if (timeoutMs !== undefined) {
+			timeout = setTimeout(() => {
+				cleanup();
+				reject(new Error('webext-alert: action popup did not connect in time'));
+			}, timeoutMs);
+		}
 	});
 }

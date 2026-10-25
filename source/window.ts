@@ -53,34 +53,29 @@ async function openWindow(url: string): Promise<chrome.windows.Window | void> {
 }
 
 export async function showInWindow(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
-	const abortController = new AbortController();
-	const answerPromise = listenForAnswer(abortController.signal);
-	void answerPromise.catch(() => undefined);
+	const answerPromise = kind === 'alert' ? undefined : listenForAnswer(5000);
+	void answerPromise?.catch(() => undefined);
 	let answer: unknown;
-	try {
-		let window: chrome.windows.Window | void;
-		if (kind === 'alert') {
-			window = await openWindow('data:text/html,' + encodeURIComponent(getPage(message)));
+	let window: chrome.windows.Window | void;
+	if (kind === 'alert') {
+		window = await openWindow('data:text/html,' + encodeURIComponent(getPage(message)));
+	}
+
+	window ??= await openWindow(getHtmlFileUrl(message, kind, defaultValue));
+
+	if (window?.id === undefined) {
+		// Last ditch effort
+		console.log(message);
+	} else {
+		if (!isChrome()) {
+			void onWindowResize(window.id);
 		}
 
-		window ??= await openWindow(getHtmlFileUrl(message, kind, defaultValue));
+		await onWindowClose(window.id);
+	}
 
-		if (window?.id === undefined) {
-			// Last ditch effort
-			console.log(message);
-		} else {
-			if (!isChrome()) {
-				void onWindowResize(window.id);
-			}
-
-			await onWindowClose(window.id);
-		}
-
-		if (kind !== 'alert' && window?.id !== undefined) {
-			answer = await answerPromise;
-		}
-	} finally {
-		abortController.abort();
+	if (answerPromise && window?.id !== undefined) {
+		answer = await answerPromise;
 	}
 
 	return answer;
