@@ -3,8 +3,15 @@
 > WebExtension module: alert() for background pages/workers in Web Extensions
 
 - Browsers: Chrome, Firefox, Safari
-- Manifest: v2 and v3
-- Contexts: background page
+- Manifest: v3
+- Contexts: background page, service worker
+
+Every function tries these in order until one works:
+
+1. The native function (`alert()`, `prompt()`, `confirm()`)
+2. `chrome.action.openPopup()`
+3. `chrome.windows.create()`
+4. `console.log()`
 
 ## Install
 
@@ -38,20 +45,21 @@ If the custom window is used, `webextAlert` will return a promise that resolves 
 
 ### localWebExtAlertHtml(url)
 
-In some cases (Firefox), the message must be loaded via a static HTML page. In this case, `webext-alert` will load the page from `https://webext-alert.vercel.app`. If this is undesirable or if you want the extension to work offline in Firefox as well, you can:
+In some cases it will display the message using a remote page hosted on `https://webext-alert.vercel.app`. The source of this page can be found in the [`./web` folder](./web). If you prefer having a local version, you can:
 
-1. copy the `html` and `js` files you find in the `web` folder into your extension
-2. call `localWebExtAlertHtml('your/folder/the-local-copied-file.html')` at the top of `background.js`
+1. copy the files from the [`./web` folder](./web) into your extension
+2. call `localWebExtAlertHtml` at the top of `background.js`
 
-## Known issues
+```js
+// background.js
+import alert, {localWebExtAlertHtml} from 'webext-alert';
 
-- If the user is using a full screen window on macOS or they're on mobile, a whole new window will be opened instead of a popup. This is a limitation of the WebExtensions API.
+localWebExtAlertHtml('your/folder/the-local-copied-file.html');
+
+alert('Hello from background script!');
+```
 
 ## Related
 
 - [Awesome-WebExtensions](https://github.com/fregante/Awesome-WebExtensions) - A curated list of awesome resources for WebExtensions development.
 - [More…](https://github.com/fregante/webext-fun)
-
-## License
-
-MIT © [Federico Brigante](https://fregante.com)
