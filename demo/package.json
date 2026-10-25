@@ -1,6 +1,6 @@
 {
 	"type": "module",
 	"alias": {
-		"webext-alert": "../index.ts"
+		"webext-alert": "../source/index.ts"
 	}
 }
