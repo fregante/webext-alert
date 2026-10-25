@@ -30,10 +30,9 @@ alert('Hello from background script!');
 
 Every function uses its native counterpart (`alert()`, …) wherever possible, otherwise it tries these in order until one works:
 
-1. The action popup (`chrome.action.openPopup()`)
-2. A popup window with the message
-3. A popup window with the [static HTML page](#localwebextalerthtmlurl)
-4. `console.log()`
+1. `chrome.action.openPopup()`
+2. `chrome.windows.create()`
+3. `console.log()`
 
 ### alert(message)
 
@@ -45,7 +44,7 @@ If the custom window is used, `webextAlert` will return a promise that resolves 
 
 ### localWebExtAlertHtml(url)
 
-In some cases (Firefox), the message must be loaded via a static HTML page. In this case, `webext-alert` will load the page from `https://webext-alert.vercel.app`. If this is undesirable or if you want the extension to work offline in Firefox as well, you can:
+The action popup always loads a static HTML page, and the window falls back to it when it can't use a `data:` URL (Firefox). By default, `webext-alert` loads the page from `https://webext-alert.vercel.app`. If this is undesirable or if you want the extension to work offline in Firefox as well, you can:
 
 1. copy the `html` and `js` files you find in the `web` folder into your extension
 2. call `localWebExtAlertHtml('your/folder/the-local-copied-file.html')` at the top of `background.js`
