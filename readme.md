@@ -8,7 +8,7 @@
 
 Every function tries these in order until one works:
 
-1. The native function (`alert()`, …)
+1. The native function (`alert()`, `prompt()`, `confirm()`)
 2. `chrome.action.openPopup()`
 3. `chrome.windows.create()`
 4. `console.log()`
