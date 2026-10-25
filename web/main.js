@@ -21,7 +21,7 @@ if (!textElement.textContent) {
 }
 
 // The data URL page only has the Ok button
-const button = document.querySelector('button[type="submit"]');
+const okButton = document.querySelector('button[type="submit"]');
 const cancel = document.querySelector('button[type="button"]');
 const input = document.querySelector('input');
 
@@ -35,7 +35,7 @@ if (kind === 'prompt') {
 	input.value = parameters.get('default') ?? '';
 	input.addEventListener('keydown', event => {
 		if (event.key === 'Enter') {
-			button.click();
+			okButton.click();
 		}
 	});
 }
@@ -47,7 +47,7 @@ if (kind !== 'alert') {
 	});
 }
 
-button.addEventListener('click', _ => {
+okButton.addEventListener('click', _ => {
 	answer(kind === 'prompt' ? input.value : true);
 });
 
@@ -70,4 +70,4 @@ const size = {
 };
 window.moveTo(size.left, size.top);
 chrome.runtime.sendMessage({webextAlert: size});
-(kind === 'prompt' ? input : button).focus();
+(kind === 'prompt' ? input : okButton).focus();

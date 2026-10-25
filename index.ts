@@ -182,7 +182,7 @@ export const alert = shouldUsePopup
 */
 export const confirm = shouldUsePopup
 	? popupConfirm
-	: async (message = '') => globalThis.confirm?.(message) ?? false;
+	: globalThis.confirm ?? (() => false);
 
 /**
  Like `prompt()`, but also available where the native one isn't.
@@ -191,7 +191,7 @@ export const confirm = shouldUsePopup
 */
 export const prompt = shouldUsePopup
 	? popupPrompt
-	: async (message = '', defaultValue = '') => globalThis.prompt?.(message, defaultValue) ?? null;
+	: globalThis.prompt ?? (() => null);
 
 /**
  Change the HTML page to be used in certain scenarios (Firefox).
