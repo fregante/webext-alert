@@ -9,7 +9,7 @@
 Every function tries these in order until one works:
 
 1. The native function (`alert()`, `prompt()`, `confirm()`)
-2. `chrome.action.openPopup()`
+2. `chrome.action.openPopup()` (requires the [`action` key](#manifestjson))
 3. `chrome.windows.create()`
 4. `console.log()`
 
@@ -38,6 +38,22 @@ await showErrors(async () => {
 ```
 
 <img alt="alert from service worker in MV3" src="https://github.com/user-attachments/assets/ba6ae04f-3219-4f58-af0a-2d3f348d15e3">
+
+## manifest.json
+
+`chrome.action` only exists if `manifest.json` has the `action` key, so the popup strategy doesn't work out of the box. An empty object is enough:
+
+```json
+{
+	"manifest_version": 3,
+	"action": {},
+	"background": {
+		"service_worker": "background.js"
+	}
+}
+```
+
+Without it, `chrome.action` is `undefined` and the window from `chrome.windows.create()` is used instead. If your `action` already has a `default_popup`, it's replaced temporarily while the message is shown and restored afterwards.
 
 ## API
 
