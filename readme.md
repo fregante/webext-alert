@@ -50,10 +50,6 @@ In some cases, loading a remote page (`https://webext-alert.vercel.app`) is requ
 1. copy the `html` and `js` files you find in the `web` folder into your extension
 2. call `localWebExtAlertHtml('your/folder/the-local-copied-file.html')` at the top of `background.js`
 
-## Known issues
-
-- If the action popup isn't available, the popup windows open as regular windows when the user is in full screen on macOS or on mobile. This is a limitation of the WebExtensions API.
-
 ## Related
 
 - [Awesome-WebExtensions](https://github.com/fregante/Awesome-WebExtensions) - A curated list of awesome resources for WebExtensions development.
