@@ -30,7 +30,12 @@ alert('Hello from background script!');
 
 ### alert(message)
 
-Uses `alert()` wherever possible, but falls back to a custom window with the same content.
+Uses `alert()` wherever possible, otherwise it tries these in order until one works:
+
+1. The action popup (`chrome.action.openPopup()`)
+2. A popup window with the message
+3. A popup window with the [static HTML page](#localwebextalerthtmlurl)
+4. `console.log()`
 
 If the native `alert` is used, this will block the execution of the background script until the user closes the alert.
 
@@ -45,13 +50,9 @@ In some cases (Firefox), the message must be loaded via a static HTML page. In t
 
 ## Known issues
 
-- If the user is using a full screen window on macOS or they're on mobile, a whole new window will be opened instead of a popup. This is a limitation of the WebExtensions API.
+- If the action popup isn't available, the popup windows open as regular windows when the user is in full screen on macOS or on mobile. This is a limitation of the WebExtensions API.
 
 ## Related
 
 - [Awesome-WebExtensions](https://github.com/fregante/Awesome-WebExtensions) - A curated list of awesome resources for WebExtensions development.
 - [More…](https://github.com/fregante/webext-fun)
-
-## License
-
-MIT © [Federico Brigante](https://fregante.com)
