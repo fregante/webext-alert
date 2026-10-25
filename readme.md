@@ -28,14 +28,16 @@ alert('Hello from background script!');
 
 ## API
 
-### alert(message)
-
-Uses `alert()` wherever possible, otherwise it tries these in order until one works:
+Every function uses its native counterpart (`alert()`, …) wherever possible, otherwise it tries these in order until one works:
 
 1. The action popup (`chrome.action.openPopup()`)
 2. A popup window with the message
 3. A popup window with the [static HTML page](#localwebextalerthtmlurl)
 4. `console.log()`
+
+### alert(message)
+
+Uses `alert()` wherever possible, but falls back to a custom window with the same content.
 
 If the native `alert` is used, this will block the execution of the background script until the user closes the alert.
 
