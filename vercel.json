@@ -1,5 +1,8 @@
 {
 	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"framework": null,
+	"buildCommand": "parcel build web/index.html --dist-dir dist-web --public-url ./ --no-cache",
+	"outputDirectory": "dist-web",
 	"git": {
 		"deploymentEnabled": {
 			"main": true,

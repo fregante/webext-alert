@@ -11,6 +11,7 @@ logs
 index.js
 index.d.ts
 dist
+dist-web
 .parcel-cache
 demo/package-lock.json
 .vercel
