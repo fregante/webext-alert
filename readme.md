@@ -6,6 +6,13 @@
 - Manifest: v2 and v3
 - Contexts: background page
 
+Every function tries these in order until one works:
+
+1. The native function (`alert()`, …)
+2. `chrome.action.openPopup()`
+3. `chrome.windows.create()`
+4. `console.log()`
+
 ## Install
 
 You can download the [standalone bundle](https://bundle.fregante.com/?pkg=webext-alert&global=webextAlert) and include it in your `manifest.json`.
@@ -27,12 +34,6 @@ alert('Hello from background script!');
 <img width="420" alt="alert from service worker in MV3" src="https://github.com/fregante/webext-alert/assets/1402241/bc25c6dc-633a-40f9-91f2-04d0cca16300">
 
 ## API
-
-Every function uses its native counterpart (`alert()`, …) wherever possible, otherwise it tries these in order until one works:
-
-1. `chrome.action.openPopup()`
-2. `chrome.windows.create()`
-3. `console.log()`
 
 ### alert(message)
 
