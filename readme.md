@@ -26,11 +26,15 @@ npm install webext-alert
 ## Usage
 
 ```js
-import {alert, prompt, confirm} from 'webext-alert';
+import {alert, prompt, confirm, showErrors} from 'webext-alert';
 
 await alert('Hello from background script!');
 await prompt('What is your name?', 'Anonymous');
 await confirm('Are you sure?');
+
+await showErrors(async () => {
+	throw new Error('Something went wrong!');
+});
 ```
 
 <img alt="alert from service worker in MV3" src="https://github.com/user-attachments/assets/ba6ae04f-3219-4f58-af0a-2d3f348d15e3">

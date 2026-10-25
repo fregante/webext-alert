@@ -220,8 +220,8 @@ export function showErrors<Arguments extends unknown[]>(
 		try {
 			await callback(...arguments_);
 		} catch (error) {
-			console.error(error);
-			await webextAlert(error instanceof Error ? error.message : String(error));
+			await alert(error instanceof Error ? error.message : String(error));
+			throw error;
 		}
 	};
 }
