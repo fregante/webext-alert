@@ -8,11 +8,9 @@ import localPage from 'url:./webext-alert.html';
 
 localWebExtAlertHtml(localPage);
 
-setTimeout(alert, 3000, 'Thanks for visiting!\n\n- Background script');
-
 setTimeout(async () => {
 	const name = await prompt('What is your name?', 'Anonymous');
 	if (name !== null && await confirm(`Hello ${name}, is this correct?`)) {
 		await alert('Great!');
 	}
-}, 6000);
+}, 2000);
