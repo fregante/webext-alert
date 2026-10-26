@@ -6,6 +6,7 @@ let queue: Promise<void> = Promise.resolve();
 export async function showInActionPopup(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
 	const previous = queue;
 	let release!: () => void;
+	// eslint-disable-next-line unicorn/prefer-promise-with-resolvers -- Not available in the TypeScript lib target
 	queue = new Promise(resolve => {
 		release = resolve;
 	});
