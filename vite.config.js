@@ -99,6 +99,7 @@ export default defineConfig({
 	],
 	build: {
 		outDir: resolve('distribution/module'),
+		emptyOutDir: true,
 		sourcemap: false,
 		minify: false,
 		target: 'esnext',
