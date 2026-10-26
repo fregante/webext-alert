@@ -2,8 +2,9 @@
 	"extends": "@sindresorhus/tsconfig",
 	"compilerOptions": {
 		"rootDir": "source",
-		"outDir": ".",
+		"outDir": "distribution",
 		"lib": null,
+		// Source handled by Parcel
 		"emitDeclarationOnly": true,
 		"types": ["chrome"]
 	},

@@ -14,7 +14,7 @@ action-popup.d.ts
 shared.d.ts
 window.d.ts
 dist
-dist-web
+distribution
 .parcel-cache
 demo/package-lock.json
 .vercel
