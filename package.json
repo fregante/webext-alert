@@ -57,6 +57,6 @@
 		"xo": "^5.0.1"
 	},
 	"webExt": {
-		"sourceDir": "dist"
+		"sourceDir": "demo/dist"
 	}
 }
