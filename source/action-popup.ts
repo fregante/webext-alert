@@ -1,15 +1,27 @@
 import {type MessageKind, getHtmlFileUrl, listenForAnswer} from './shared.js';
 
-let queue: Promise<unknown> = Promise.resolve();
+let queue: Promise<void> = Promise.resolve();
 
 // Only one message can be displayed at a time, the others wait their turn
 export async function showInActionPopup(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
-	const result = queue.then(async () => showOne(message, kind, defaultValue));
-	// Safari has race conditions if a popup opens right after another one closed. Only delay the next popup, not the answer
-	queue = result.catch(() => undefined).then(async () => new Promise(resolve => {
-		setTimeout(resolve, 500);
-	}));
-	return result;
+	const previous = queue;
+	let release!: () => void;
+	queue = new Promise(resolve => {
+		release = resolve;
+	});
+
+	await previous;
+	try {
+		return await showOne(message, kind, defaultValue);
+	} finally {
+		// Safari has race conditions if a popup opens right after another one closed. Only delay the next popup, not the answer
+		void (async () => {
+			await new Promise(resolve => {
+				setTimeout(resolve, 500);
+			});
+			release();
+		})();
+	}
 }
 
 async function showOne(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
