@@ -20,7 +20,7 @@ export default defineConfig({
 	resolve: {
 		alias: [
 			// The demo imports the package by name, but `distribution/module` doesn't exist yet when it's built
-			{find: /^webext-alert\/page\.html\?url$/v, replacement: resolve('demo/page-url.js')},
+			{find: /^webext-alert\/page\.html\?url$/v, replacement: resolve('web/index.html') + '?url'},
 			{find: /^webext-alert$/v, replacement: resolve('source/index.ts')},
 		],
 	},
