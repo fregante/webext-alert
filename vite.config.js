@@ -134,6 +134,7 @@ export default defineConfig({
 			consumer: 'client',
 			build: {
 				outDir: resolve('distribution/web'),
+				modulePreload: false,
 				emptyOutDir: true,
 				rollupOptions: {
 					input: resolve('web/index.html'),
