@@ -1,6 +1,6 @@
 export type MessageKind = 'alert' | 'confirm' | 'prompt';
 
-export const defaultUrl = import.meta.env.VITE_WEB_URL;
+export const defaultUrl = import.meta.env.WEB_URL;
 let htmlFileUrl = new URL(defaultUrl);
 
 export function setHtmlFileUrl(url: string): void {
