@@ -5,21 +5,14 @@ import {
 	sleep,
 } from './shared.js';
 
-let queue: Promise<void> = Promise.resolve();
+let queue: Promise<unknown> = Promise.resolve();
 
 // Only one message can be displayed at a time, the others wait their turn
 export async function showInActionPopup(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
-	const previous = queue;
-	const {promise, resolve} = Promise.withResolvers<void>();
-	queue = promise;
-
-	await previous;
-	try {
-		return await showOne(message, kind, defaultValue);
-	} finally {
-		// Safari has race conditions if a popup opens right after another one closed. Only delay the next popup, not the answer
-		void sleep(500).then(resolve);
-	}
+	const result = queue.then(async () => showOne(message, kind, defaultValue));
+	// Safari has race conditions if a popup opens right after another one closed. Only delay the next popup, not the answer
+	queue = result.catch(() => undefined).finally(async () => sleep(500));
+	return result;
 }
 
 async function showOne(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
