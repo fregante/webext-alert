@@ -51,7 +51,6 @@ export default defineConfig({
 			consumer: 'client',
 			build: {
 				outDir: '../distribution/demo',
-				target: 'chrome120',
 				sourcemap: 'inline',
 				rollupOptions: {
 					input: {
