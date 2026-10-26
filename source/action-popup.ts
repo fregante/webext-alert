@@ -1,4 +1,9 @@
-import {type MessageKind, getHtmlFileUrl, listenForAnswer, sleep} from './shared.js';
+import {
+	type MessageKind,
+	getHtmlFileUrl,
+	listenForAnswer,
+	sleep,
+} from './shared.js';
 
 let queue: Promise<void> = Promise.resolve();
 
