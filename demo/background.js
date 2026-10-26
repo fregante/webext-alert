@@ -5,7 +5,7 @@ import {
 	localWebExtAlertHtml,
 	showErrors,
 } from 'webext-alert';
-import localPage from 'url:./webext-alert.html';
+import localPage from 'url:../web/index.html';
 
 localWebExtAlertHtml(localPage);
 
