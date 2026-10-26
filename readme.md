@@ -121,19 +121,21 @@ chrome.action.onClicked.addListener(() => showErrors(async () => {
 
 `alert()` may display the message using a remote page hosted on `https://webext-alert.vercel.app`. The source of this page can be found in the [`./web` folder](./web). The remote page can't communicate with your extension, so `confirm()` and `prompt()` **require** a local copy when the custom window is used (service workers, Firefox, Safari). For `alert()` it's optional, but it adds offline support.
 
-To use a local copy:
-
-1. copy the files from the [`./web` folder](./web) into your extension
-2. call `localWebExtAlertHtml` at the top of `background.js`
+If you use an HTML-aware bundler, you can import the bundled page URL directly from the package:
 
 ```js
-// background.js
-import {alert, localWebExtAlertHtml} from 'webext-alert';
+// Vite
+import pageUrl from 'webext-alert/page.html?url';
 
-localWebExtAlertHtml('your/folder/the-local-copied-file.html');
+// Or Parcel
+// import pageUrl from 'url:webext-alert/page.html';
 
-alert('Hello from background script!');
+import {localWebExtAlertHtml} from 'webext-alert';
+
+localWebExtAlertHtml(pageUrl);
 ```
+
+Otherwise, copy the files from the [`./web` folder](./web) into your extension and pass the copied HTML path to `localWebExtAlertHtml`.
 
 ## Related
 

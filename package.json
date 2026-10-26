@@ -8,11 +8,14 @@
 	"author": "Federico Brigante <me@fregante.com> (https://fregante.com)",
 	"type": "module",
 	"exports": {
-		"types": "./index.d.ts",
-		"default": {
+		".": {
 			"types": "./index.d.ts",
-			"default": "./index.js"
-		}
+			"default": {
+				"types": "./index.d.ts",
+				"default": "./index.js"
+			}
+		},
+		"./page.html": "./page.html"
 	},
 	"sideEffects": false,
 	"engines": {
@@ -28,7 +31,9 @@
 	},
 	"files": [
 		"index.js",
-		"index.d.ts"
+		"index.d.ts",
+		"page.html",
+		"web"
 	],
 	"keywords": [
 		"browser",
