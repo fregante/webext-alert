@@ -46,6 +46,36 @@ const demoPlugins = [
 	},
 ];
 
+// Inline the bundled JS and CSS into the HTML so the hosted page is a single file
+const inlineWebAssets = {
+	name: 'webext-alert-inline-web-assets',
+	enforce: 'post',
+	applyToEnvironment: environment => environment.name === 'web',
+	generateBundle(options, bundle) {
+		const html = bundle['index.html'];
+		let source = String(html.source);
+		for (const [fileName, file] of Object.entries(bundle)) {
+			if (file.type === 'chunk') {
+				source = source.replace(
+					new RegExp(`<script[^>]*src="[^"]*${fileName}"[^>]*></script>`, 'v'),
+					() => `<script type="module">${file.code}</script>`,
+				);
+			} else if (fileName.endsWith('.css')) {
+				source = source.replace(
+					new RegExp(`<link[^>]*href="[^"]*${fileName}"[^>]*>`, 'v'),
+					() => `<style>${String(file.source)}</style>`,
+				);
+			} else {
+				continue;
+			}
+
+			delete bundle[fileName];
+		}
+
+		html.source = source;
+	},
+};
+
 // A single `vite build` produces everything:
 // - client: the library in `distribution/module` (plus d.ts files)
 // - demo: the demo extension in `distribution/demo`
@@ -57,11 +87,11 @@ export default defineConfig({
 	publicDir: false,
 	plugins: [
 		...demoPlugins,
+		inlineWebAssets,
 		...[dts({
 			root: resolve('.'),
 			include: [resolve('source')],
 			tsconfigPath: resolve('tsconfig.json'),
-			bundleTypes: true,
 		})].flat().map(plugin => ({
 			...plugin,
 			applyToEnvironment: environment => environment.name === 'client',

@@ -47,7 +47,6 @@
 		"webext-events": "^4.0.0"
 	},
 	"devDependencies": {
-		"@microsoft/api-extractor": "^7.59.4",
 		"@sindresorhus/tsconfig": "^8.1.0",
 		"@types/chrome": "^0.3.6",
 		"globals": "^17.13.0",
