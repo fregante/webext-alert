@@ -125,7 +125,7 @@ If you use an HTML-aware bundler, you can import the bundled page URL directly f
 
 ```js
 import pageUrl from 'webext-alert/page.html?url'; // Vite
-import pageUrl from 'url:webext-alert/page.html'; // or Parcel
+import pageUrl from 'webext-alert/page.html?url'; // or Vite
 
 import {localWebExtAlertHtml} from 'webext-alert';
 

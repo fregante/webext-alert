@@ -15,6 +15,6 @@ shared.d.ts
 window.d.ts
 dist
 distribution
-.parcel-cache
+demo/dist
 demo/package-lock.json
 .vercel

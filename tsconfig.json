@@ -4,9 +4,9 @@
 		"rootDir": "source",
 		"outDir": "distribution",
 		"lib": null,
-		// Source handled by Parcel
+		// Source handled by Vite
 		"emitDeclarationOnly": true,
-		"types": ["chrome"]
+		"types": ["chrome", "vite/client"]
 	},
 	"include": [
 		"source"

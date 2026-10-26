@@ -19,9 +19,9 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"build": "parcel build --target library",
-		"demo:build": "parcel build --no-cache",
-		"demo:watch": "parcel watch --no-cache --no-hmr",
+		"build": "vite build",
+		"demo:build": "vite build --config demo/vite.config.js",
+		"demo:watch": "vite build --watch --config demo/vite.config.js",
 		"prepare": "npm run build",
 		"test": "xo && tsc",
 		"watch": "tsc --watch"
@@ -48,42 +48,13 @@
 		"webext-events": "^4.0.0"
 	},
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.16.4",
-		"@parcel/packager-ts": "^2.16.4",
-		"@parcel/transformer-inline-string": "^2.16.4",
-		"@parcel/transformer-webextension": "^2.16.4",
 		"@sindresorhus/tsconfig": "^8.1.0",
 		"@types/chrome": "^0.3.6",
 		"globals": "^17.13.0",
-		"parcel": "^2.16.4",
-		"postcss-import": "^17.0.1",
 		"typescript": "^6.0.3",
+		"vite": "^8.3.5",
 		"webext-base-css": "^2.1.0",
 		"xo": "^5.0.1"
-	},
-	"source": "source/index.ts",
-	"@parcel/resolver-default": {
-		"packageExports": true
-	},
-	"targets": {
-		"main": false,
-		"types": false,
-		"library": {
-			"isLibrary": true,
-			"includeNodeModules": false,
-			"outputFormat": "esmodule",
-			"sourceMap": false,
-			"distDir": "./distribution"
-		},
-		"demo": {
-			"engines": {
-				"browsers": "last 2 Chrome versions"
-			},
-			"source": "demo/manifest.json",
-			"sourceMap": {
-				"inline": true
-			}
-		}
 	},
 	"webExt": {
 		"sourceDir": "dist"

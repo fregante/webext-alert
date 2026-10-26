@@ -5,7 +5,8 @@ import {
 	localWebExtAlertHtml,
 	showErrors,
 } from 'webext-alert';
-import localPage from 'url:webext-alert/page.html';
+
+const localPage = chrome.runtime.getURL('web/index.html');
 
 localWebExtAlertHtml(localPage);
 
