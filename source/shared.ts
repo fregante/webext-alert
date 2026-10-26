@@ -24,50 +24,56 @@ export function getHtmlFileUrl(message: string, kind: MessageKind = 'alert', def
 	return url.href;
 }
 
-// Register the listener before opening the action popup or window to avoid race conditions
-export async function listenForAnswer(timeoutMs?: number): Promise<unknown> {
-	let answer: unknown;
-	let timeout: ReturnType<typeof setTimeout> | undefined;
-	let disconnectTimeout: ReturnType<typeof setTimeout> | undefined;
+function isAnswer(message: unknown): message is {webextAlertAnswer: unknown} {
+	return typeof message === 'object' && message !== null && 'webextAlertAnswer' in message;
+}
 
-	return new Promise((resolve, reject) => {
+// Register the listener before opening the action popup or window to avoid race conditions
+export function listenForAnswer(connectTimeoutMs?: number) {
+	let dismiss!: () => void;
+	const answer = new Promise<unknown>((resolve, reject) => {
 		function cleanup() {
 			clearTimeout(timeout);
-			clearTimeout(disconnectTimeout);
 			chrome.runtime.onConnect.removeListener(onConnect);
 			chrome.runtime.onMessage.removeListener(onMessage);
 		}
 
-		const onMessage = (message: unknown) => {
-			if (typeof message !== 'object' || message === null || !('webextAlertAnswer' in message)) {
-				return;
-			}
-
-			answer = message.webextAlertAnswer;
-		};
-
-		const onConnect = (port: chrome.runtime.Port) => {
+		// The page disconnects when it closes; if it did before answering, it was dismissed
+		function onConnect(port: chrome.runtime.Port) {
 			if (port.name !== 'webext-alert') {
 				return;
 			}
 
 			clearTimeout(timeout);
-			port.onDisconnect.addListener(() => {
-				// Give the page a chance to deliver its answer before treating the disconnect as dismissal
-				disconnectTimeout = setTimeout(() => {
-					cleanup();
-					resolve(answer);
-				}, 100);
-			});
-		};
+			port.onDisconnect.addListener(dismiss);
+		}
 
-		chrome.runtime.onMessage.addListener(onMessage);
-		chrome.runtime.onConnect.addListener(onConnect);
-		if (timeoutMs !== undefined) {
-			timeout = setTimeout(() => {
+		// The page waits for this acknowledgement before closing, so the answer always wins over the disconnection
+		function onMessage(message: unknown, _sender: chrome.runtime.MessageSender, sendResponse: () => void) {
+			if (!isAnswer(message)) {
+				return;
+			}
+
+			cleanup();
+			resolve(message.webextAlertAnswer);
+			sendResponse();
+		}
+
+		const timeout = connectTimeoutMs === undefined
+			? undefined
+			: setTimeout(() => {
 				cleanup();
 				reject(new Error('webext-alert: action popup did not connect in time'));
-			}, timeoutMs);
-		}
+			}, connectTimeoutMs);
+
+		dismiss = () => {
+			cleanup();
+			resolve(undefined);
+		};
+
+		chrome.runtime.onConnect.addListener(onConnect);
+		chrome.runtime.onMessage.addListener(onMessage);
 	});
+
+	return {answer, dismiss};
 }

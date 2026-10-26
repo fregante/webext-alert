@@ -3,14 +3,13 @@ import {type MessageKind, getHtmlFileUrl, listenForAnswer} from './shared.js';
 export async function showInActionPopup(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
 	const originalActionPopup = await chrome.action.getPopup({});
 	await chrome.action.setPopup({popup: getHtmlFileUrl(message, kind, defaultValue)});
-	const answer = listenForAnswer(5000);
-	void answer.catch(() => undefined);
+	const listener = listenForAnswer(5000);
 	try {
 		await chrome.action.openPopup();
-		return await answer;
+		return await listener.answer;
 	} finally {
-		try {
-			await chrome.action.setPopup({popup: originalActionPopup});
-		} catch {}
+		listener.dismiss();
+		// Restoring can fail on Safari and must not override the answer
+		await chrome.action.setPopup({popup: originalActionPopup}).catch(() => undefined);
 	}
 }
