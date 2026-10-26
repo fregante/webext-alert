@@ -52,6 +52,7 @@
 		"typescript": "^6.0.3",
 		"unplugin-dts": "^1.1.2",
 		"vite": "^8.3.5",
+		"vite-plugin-singlefile": "^2.3.4",
 		"vite-plugin-static-copy": "^4.1.1",
 		"webext-base-css": "^2.1.0",
 		"xo": "^5.0.1"

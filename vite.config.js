@@ -3,62 +3,10 @@ import {fileURLToPath} from 'node:url';
 import {defineConfig} from 'vite';
 import dts from 'unplugin-dts/vite';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
+import {viteSingleFile} from 'vite-plugin-singlefile';
 
 const resolve = path => fileURLToPath(new URL(path, import.meta.url));
 const {dependencies} = JSON.parse(readFileSync(resolve('package.json'), 'utf8'));
-
-const demoPlugins = [
-	{
-		// Resolve the package's `page.html` export to the URL of the bundled HTML entry
-		name: 'webext-alert-page-url',
-		enforce: 'pre',
-		applyToEnvironment: environment => environment.name === 'demo',
-		resolveId(id) {
-			if (id === 'webext-alert/page.html?url') {
-				return '\0webext-alert-page-url';
-			}
-
-			if (id === 'webext-alert') {
-				return resolve('source/index.ts');
-			}
-		},
-		load(id) {
-			if (id === '\0webext-alert-page-url') {
-				return 'export default chrome.runtime.getURL("index.html");';
-			}
-		},
-	},
-];
-
-// Inline the bundled JS and CSS into the HTML so the hosted page is a single file
-const inlineWebAssets = {
-	name: 'webext-alert-inline-web-assets',
-	enforce: 'post',
-	applyToEnvironment: environment => environment.name === 'web',
-	generateBundle(options, bundle) {
-		const html = bundle['index.html'];
-		let source = String(html.source);
-		for (const [fileName, file] of Object.entries(bundle)) {
-			if (file.type === 'chunk') {
-				source = source.replace(
-					new RegExp(`<script[^>]*src="[^"]*${fileName}"[^>]*></script>`, 'v'),
-					() => `<script type="module">${file.code}</script>`,
-				);
-			} else if (fileName.endsWith('.css')) {
-				source = source.replace(
-					new RegExp(`<link[^>]*href="[^"]*${fileName}"[^>]*>`, 'v'),
-					() => `<style>${String(file.source)}</style>`,
-				);
-			} else {
-				continue;
-			}
-
-			delete bundle[fileName];
-		}
-
-		html.source = source;
-	},
-};
 
 // A single `vite build` produces everything:
 // - client: the library in `distribution/module` (plus d.ts files)
@@ -69,9 +17,18 @@ export default defineConfig({
 	root: resolve('web'),
 	base: './',
 	publicDir: false,
+	resolve: {
+		alias: [
+			// The demo imports the package by name, but `distribution/module` doesn't exist yet when it's built
+			{find: /^webext-alert\/page\.html\?url$/v, replacement: resolve('demo/page-url.js')},
+			{find: /^webext-alert$/v, replacement: resolve('source/index.ts')},
+		],
+	},
 	plugins: [
-		...demoPlugins,
-		inlineWebAssets,
+		{
+			...viteSingleFile(),
+			applyToEnvironment: environment => environment.name === 'web',
+		},
 		viteStaticCopy({
 			environment: 'demo',
 			targets: [
@@ -126,7 +83,6 @@ export default defineConfig({
 			consumer: 'client',
 			build: {
 				outDir: resolve('distribution/web'),
-				modulePreload: false,
 				emptyOutDir: true,
 				rollupOptions: {
 					input: resolve('web/index.html'),
