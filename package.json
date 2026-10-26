@@ -12,14 +12,14 @@
 			"types": "./distribution/index.d.ts",
 			"default": "./distribution/index.js"
 		},
-		"./page.html": "./web/index.html"
+		"./page.html": "./distribution/index.html"
 	},
 	"sideEffects": false,
 	"engines": {
 		"node": ">=24"
 	},
 	"scripts": {
-		"build": "parcel build --target library",
+		"build": "parcel build --target library && parcel build --target page",
 		"demo:build": "parcel build --no-cache",
 		"demo:watch": "parcel watch --no-cache --no-hmr",
 		"prepare": "npm run build",
@@ -27,8 +27,7 @@
 		"watch": "tsc --watch"
 	},
 	"files": [
-		"distribution",
-		"web"
+		"distribution"
 	],
 	"keywords": [
 		"browser",
@@ -74,6 +73,12 @@
 			"outputFormat": "esmodule",
 			"sourceMap": false,
 			"distDir": "./distribution"
+		},
+		"page": {
+			"source": "web/index.html",
+			"distDir": "./distribution",
+			"sourceMap": false,
+			"publicUrl": "./"
 		},
 		"demo": {
 			"engines": {
