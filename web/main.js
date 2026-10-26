@@ -27,18 +27,13 @@ const input = document.querySelector('input');
 
 async function answer(value) {
 	try {
-		// Wait for the background to acknowledge it before closing, but never get stuck if the browser doesn't settle the promise (Safari)
+		// The background acknowledges it, so the answer is delivered before the page closes
 		if (hasExtensionApi) {
-			await Promise.race([
-				chrome.runtime.sendMessage({webextAlertAnswer: value}),
-				new Promise(resolve => {
-					setTimeout(resolve, 1000);
-				}),
-			]);
+			await chrome.runtime.sendMessage({webextAlertAnswer: value});
 		}
-	} catch {}
-
-	window.close();
+	} finally {
+		window.close();
+	}
 }
 
 if (kind === 'prompt') {
