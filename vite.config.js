@@ -2,6 +2,7 @@ import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {defineConfig} from 'vite';
 import dts from 'unplugin-dts/vite';
+import {viteStaticCopy} from 'vite-plugin-static-copy';
 
 const resolve = path => fileURLToPath(new URL(path, import.meta.url));
 const {dependencies} = JSON.parse(readFileSync(resolve('package.json'), 'utf8'));
@@ -71,6 +72,13 @@ export default defineConfig({
 	plugins: [
 		...demoPlugins,
 		inlineWebAssets,
+		viteStaticCopy({
+			environment: 'demo',
+			targets: [
+				{src: resolve('demo/manifest.json'), dest: '.', rename: {stripBase: true}},
+				{src: resolve('demo/unrelated-popup.html'), dest: '.', rename: {stripBase: true}},
+			],
+		}),
 		...[dts({
 			root: resolve('.'),
 			include: [resolve('source')],
