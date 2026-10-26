@@ -9,11 +9,8 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"types": "./index.d.ts",
-			"default": {
-				"types": "./index.d.ts",
-				"default": "./index.js"
-			}
+			"types": "./distribution/index.d.ts",
+			"default": "./distribution/index.js"
 		},
 		"./page.html": "./web/index.html"
 	},
@@ -22,16 +19,15 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"build": "parcel build source/index.ts && tsc",
+		"build": "parcel build --target library",
 		"demo:build": "parcel build --no-cache",
 		"demo:watch": "parcel watch --no-cache --no-hmr",
 		"prepare": "npm run build",
-		"test": "xo && tsc --noEmit",
+		"test": "xo && tsc",
 		"watch": "tsc --watch"
 	},
 	"files": [
-		"index.js",
-		"index.d.ts",
+		"distribution",
 		"web"
 	],
 	"keywords": [
@@ -72,11 +68,12 @@
 	"targets": {
 		"main": false,
 		"types": false,
-		"module": {
+		"library": {
 			"isLibrary": true,
 			"includeNodeModules": false,
 			"outputFormat": "esmodule",
-			"sourceMap": false
+			"sourceMap": false,
+			"distDir": "./distribution"
 		},
 		"demo": {
 			"engines": {
