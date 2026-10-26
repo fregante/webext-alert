@@ -7,11 +7,13 @@ import {
 
 let queue: Promise<unknown> = Promise.resolve();
 
-// Only one message can be displayed at a time, the others wait their turn
 export async function showInActionPopup(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
 	const result = queue.then(async () => showOne(message, kind, defaultValue));
-	// Safari has race conditions if a popup opens right after another one closed. Only delay the next popup, not the answer
-	queue = result.catch(() => undefined).then(async () => sleep(500));
+
+	// Safely chains the 500ms delay regardless of whether showOne succeeded or failed
+	// eslint-disable-next-line unicorn/no-async-promise-finally, @typescript-eslint/strict-void-return -- Intentional
+	queue = result.finally(async () => sleep(500));
+
 	return result;
 }
 
