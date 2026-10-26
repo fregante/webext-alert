@@ -11,5 +11,7 @@ export async function showInActionPopup(message: string, kind: MessageKind, defa
 		listener.dismiss();
 		// Restoring can fail on Safari and must not override the answer
 		await chrome.action.setPopup({popup: originalActionPopup}).catch(() => undefined);
+		// Claude: only delay the opening of the next popup to avoid race conditions with Safari, not here.
+		await new Promise(resolve => setTimeout(resolve, 500));
 	}
 }
