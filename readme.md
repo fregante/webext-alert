@@ -124,11 +124,8 @@ chrome.action.onClicked.addListener(() => showErrors(async () => {
 If you use an HTML-aware bundler, you can import the bundled page URL directly from the package:
 
 ```js
-// Vite
-import pageUrl from 'webext-alert/page.html?url';
-
-// Or Parcel
-// import pageUrl from 'url:webext-alert/page.html';
+import pageUrl from 'webext-alert/page.html?url'; // Vite
+import pageUrl from 'url:webext-alert/page.html'; // or Parcel
 
 import {localWebExtAlertHtml} from 'webext-alert';
 

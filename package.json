@@ -15,7 +15,7 @@
 				"default": "./index.js"
 			}
 		},
-		"./page.html": "./page.html"
+		"./page.html": "./web/index.html"
 	},
 	"sideEffects": false,
 	"engines": {
@@ -32,7 +32,6 @@
 	"files": [
 		"index.js",
 		"index.d.ts",
-		"page.html",
 		"web"
 	],
 	"keywords": [

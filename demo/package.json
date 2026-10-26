@@ -1,6 +1,7 @@
 {
 	"type": "module",
 	"alias": {
-		"webext-alert": "../source/index.ts"
+		"webext-alert": "../source",
+		"webext-alert/page.html": "../web/index.html"
 	}
 }
