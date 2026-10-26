@@ -22,7 +22,8 @@
 		"build": "vite build",
 		"watch": "vite build --watch",
 		"prepack": "npm run build",
-		"test": "xo && tsc",
+		"test": "xo && tsc && npm run test:unit",
+		"test:unit": "node --import ./test/register.js --test source/*.test.ts",
 		"watch:typescript": "tsc --watch"
 	},
 	"files": [
@@ -48,6 +49,7 @@
 	"devDependencies": {
 		"@sindresorhus/tsconfig": "^8.1.0",
 		"@types/chrome": "^0.3.6",
+		"@types/node": "^24.19.2",
 		"globals": "^17.13.0",
 		"typescript": "^6.0.3",
 		"unplugin-dts": "^1.1.2",
