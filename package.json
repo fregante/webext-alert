@@ -9,8 +9,8 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"types": "./distribution/index.d.ts",
-			"default": "./distribution/index.js"
+			"types": "./distribution/module/index.d.ts",
+			"default": "./distribution/module/index.js"
 		},
 		"./page.html": "./web/index.html"
 	},
@@ -26,7 +26,7 @@
 		"watch": "tsc --watch"
 	},
 	"files": [
-		"distribution",
+		"distribution/module",
 		"web"
 	],
 	"keywords": [
@@ -57,6 +57,6 @@
 		"xo": "^5.0.1"
 	},
 	"webExt": {
-		"sourceDir": "demo/dist"
+		"sourceDir": "distribution/demo"
 	}
 }

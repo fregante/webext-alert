@@ -2,7 +2,7 @@
 	"$schema": "https://openapi.vercel.sh/vercel.json",
 	"framework": null,
 	"buildCommand": "vite build",
-	"outputDirectory": "dist",
+	"outputDirectory": "distribution/web",
 	"rewrites": [
 		{
 			"source": "/",

@@ -16,6 +16,10 @@ const demoPlugins = [
 			if (id === 'webext-alert/page.html?url') {
 				return '\0webext-alert-page-url';
 			}
+
+			if (id === 'webext-alert') {
+				return resolve('source/index.ts');
+			}
 		},
 		load(id) {
 			if (id === '\0webext-alert-page-url') {
@@ -38,9 +42,9 @@ const demoPlugins = [
 ];
 
 // A single `vite build` produces everything:
-// - client: the library in `distribution` (plus d.ts files)
-// - demo: the demo extension in `demo/dist`
-// - web: the hosted page in `dist`
+// - client: the library in `distribution/module` (plus d.ts files)
+// - demo: the demo extension in `distribution/demo`
+// - web: the hosted page in `distribution/web`
 export default defineConfig({
 	base: './',
 	publicDir: false,
@@ -55,7 +59,7 @@ export default defineConfig({
 		})),
 	],
 	build: {
-		outDir: 'distribution',
+		outDir: 'distribution/module',
 		sourcemap: false,
 		minify: false,
 		target: 'esnext',
@@ -71,13 +75,8 @@ export default defineConfig({
 	environments: {
 		demo: {
 			consumer: 'client',
-			resolve: {
-				alias: [
-					{find: /^webext-alert$/v, replacement: resolve('source/index.ts')},
-				],
-			},
 			build: {
-				outDir: 'demo/dist',
+				outDir: 'distribution/demo',
 				emptyOutDir: true,
 				target: 'chrome120',
 				sourcemap: 'inline',
@@ -96,7 +95,7 @@ export default defineConfig({
 		web: {
 			consumer: 'client',
 			build: {
-				outDir: 'dist',
+				outDir: 'distribution/web',
 				emptyOutDir: true,
 				rollupOptions: {
 					input: resolve('web/index.html'),
