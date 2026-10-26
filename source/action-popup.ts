@@ -11,7 +11,7 @@ let queue: Promise<unknown> = Promise.resolve();
 export async function showInActionPopup(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
 	const result = queue.then(async () => showOne(message, kind, defaultValue));
 	// Safari has race conditions if a popup opens right after another one closed. Only delay the next popup, not the answer
-	queue = result.catch(() => undefined).finally(async () => sleep(500));
+	queue = result.catch(() => undefined).then(async () => sleep(500));
 	return result;
 }
 
