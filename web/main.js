@@ -2,7 +2,9 @@
 const hasExtensionApi = Boolean(globalThis.chrome?.runtime?.id);
 
 // Connect to background to allow it to detect when this popup closes
-const port = hasExtensionApi ? chrome.runtime.connect({name: 'webext-alert'}) : undefined;
+if (hasExtensionApi) {
+	chrome.runtime.connect({name: 'webext-alert'});
+}
 
 const parameters = new URLSearchParams(location.search);
 const kind = parameters.get('kind') ?? 'alert';
@@ -23,9 +25,15 @@ const okButton = document.querySelector('button[type="submit"]');
 const cancel = document.querySelector('button[type="button"]');
 const input = document.querySelector('input');
 
-function answer(value) {
-	port?.postMessage({answer: value});
-	window.close();
+async function answer(value) {
+	try {
+		// The background acknowledges it, so the answer is delivered before the page closes
+		if (hasExtensionApi) {
+			await chrome.runtime.sendMessage({webextAlertAnswer: value});
+		}
+	} finally {
+		window.close();
+	}
 }
 
 if (kind === 'prompt') {

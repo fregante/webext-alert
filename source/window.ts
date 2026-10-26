@@ -65,16 +65,17 @@ export async function showInWindow(message: string, kind: MessageKind, defaultVa
 		if (window?.id === undefined) {
 			// Last ditch effort
 			console.log(message);
+			listener.dismiss();
 		} else {
 			if (!isChrome()) {
 				void onWindowResize(window.id);
 			}
 
-			await onWindowClose(window.id);
+			void onWindowClose(window.id).then(listener.dismiss);
 		}
-	} finally {
-		listener.stop();
-	}
 
-	return listener.getAnswer();
+		return await listener.answer;
+	} finally {
+		listener.dismiss();
+	}
 }

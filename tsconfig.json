@@ -3,11 +3,12 @@
 	"compilerOptions": {
 		"rootDir": "source",
 		"outDir": ".",
+		"lib": null,
 		"emitDeclarationOnly": true,
 		"types": ["chrome"]
 	},
-	"files": [
-		"source/index.ts",
-		"source/bundle-text.d.ts"
-	]
+	"include": [
+		"source"
+	],
+	"exclude": []
 }
