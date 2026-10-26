@@ -21,7 +21,7 @@
 	"scripts": {
 		"build": "vite build",
 		"watch": "vite build --watch",
-		"prepare": "npm run build",
+		"prepack": "npm run build",
 		"test": "xo && tsc",
 		"watch:typescript": "tsc --watch"
 	},
