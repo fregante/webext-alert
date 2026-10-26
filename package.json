@@ -19,7 +19,7 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"build": "vite build",
+		"build": "vite build && tsc",
 		"demo:build": "vite build --mode demo",
 		"demo:watch": "vite build --watch --mode demo",
 		"prepare": "npm run build",
