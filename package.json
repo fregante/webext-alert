@@ -19,9 +19,8 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"build": "vite build && tsc",
-		"demo:build": "vite build --mode demo",
-		"demo:watch": "vite build --watch --mode demo",
+		"build": "vite build",
+		"watch:demo": "vite build --watch",
 		"prepare": "npm run build",
 		"test": "xo && tsc",
 		"watch": "tsc --watch"
@@ -52,6 +51,7 @@
 		"@types/chrome": "^0.3.6",
 		"globals": "^17.13.0",
 		"typescript": "^6.0.3",
+		"unplugin-dts": "^1.1.2",
 		"vite": "^8.3.5",
 		"webext-base-css": "^2.1.0",
 		"xo": "^5.0.1"

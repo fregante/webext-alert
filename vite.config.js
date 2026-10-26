@@ -1,49 +1,81 @@
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {defineConfig} from 'vite';
+import dts from 'unplugin-dts/vite';
 
 const resolve = path => fileURLToPath(new URL(path, import.meta.url));
 const {dependencies} = JSON.parse(readFileSync(resolve('package.json'), 'utf8'));
 
-// `vite build` builds the library; `--mode demo` the demo extension; `--mode web` the hosted page
-export default defineConfig(({mode}) => {
-	if (mode === 'demo') {
-		return {
-			base: './',
-			publicDir: false,
+const demoPlugins = [
+	{
+		// Resolve the package's `page.html` export to the URL of the bundled HTML entry
+		name: 'webext-alert-page-url',
+		enforce: 'pre',
+		applyToEnvironment: environment => environment.name === 'demo',
+		resolveId(id) {
+			if (id === 'webext-alert/page.html?url') {
+				return '\0webext-alert-page-url';
+			}
+		},
+		load(id) {
+			if (id === '\0webext-alert-page-url') {
+				return 'export default chrome.runtime.getURL("web/index.html");';
+			}
+		},
+	},
+	{
+		name: 'webext-alert-demo-manifest',
+		applyToEnvironment: environment => environment.name === 'demo',
+		generateBundle() {
+			this.emitFile({
+				type: 'asset',
+				fileName: 'manifest.json',
+				source: readFileSync(resolve('demo/manifest.json'), 'utf8')
+					.replace('./unrelated-popup.html', './demo/unrelated-popup.html'),
+			});
+		},
+	},
+];
+
+// A single `vite build` produces everything:
+// - client: the library in `distribution` (plus d.ts files)
+// - demo: the demo extension in `demo/dist`
+// - web: the hosted page in `dist`
+export default defineConfig({
+	base: './',
+	publicDir: false,
+	plugins: [
+		...demoPlugins,
+		...[dts({
+			include: ['source'],
+			tsconfigPath: resolve('tsconfig.json'),
+		})].flat().map(plugin => ({
+			...plugin,
+			applyToEnvironment: environment => environment.name === 'client',
+		})),
+	],
+	build: {
+		outDir: 'distribution',
+		sourcemap: false,
+		minify: false,
+		target: 'esnext',
+		lib: {
+			entry: 'source/index.ts',
+			formats: ['es'],
+			fileName: 'index',
+		},
+		rollupOptions: {
+			external: Object.keys(dependencies).map(name => new RegExp(`^${name}(/|$)`, 'v')),
+		},
+	},
+	environments: {
+		demo: {
+			consumer: 'client',
 			resolve: {
 				alias: [
 					{find: /^webext-alert$/v, replacement: resolve('source/index.ts')},
 				],
 			},
-			plugins: [
-				{
-					// Resolve the package's `page.html` export to the URL of the bundled HTML entry
-					name: 'webext-alert-page-url',
-					enforce: 'pre',
-					resolveId(id) {
-						if (id === 'webext-alert/page.html?url') {
-							return '\0webext-alert-page-url';
-						}
-					},
-					load(id) {
-						if (id === '\0webext-alert-page-url') {
-							return 'export default chrome.runtime.getURL("web/index.html");';
-						}
-					},
-				},
-				{
-					name: 'emit-manifest',
-					generateBundle() {
-						this.emitFile({
-							type: 'asset',
-							fileName: 'manifest.json',
-							source: readFileSync(resolve('demo/manifest.json'), 'utf8')
-								.replace('./unrelated-popup.html', './demo/unrelated-popup.html'),
-						});
-					},
-				},
-			],
 			build: {
 				outDir: 'demo/dist',
 				emptyOutDir: true,
@@ -60,34 +92,17 @@ export default defineConfig(({mode}) => {
 					},
 				},
 			},
-		};
-	}
-
-	if (mode === 'web') {
-		return {
-			root: 'web',
-			base: './',
+		},
+		web: {
+			consumer: 'client',
 			build: {
-				outDir: '../dist',
+				outDir: 'dist',
 				emptyOutDir: true,
-			},
-		};
-	}
-
-	return {
-		build: {
-			outDir: 'distribution',
-			sourcemap: false,
-			minify: false,
-			target: 'esnext',
-			lib: {
-				entry: 'source/index.ts',
-				formats: ['es'],
-				fileName: 'index',
-			},
-			rollupOptions: {
-				external: Object.keys(dependencies).map(name => new RegExp(`^${name}(/|$)`, 'v')),
+				rollupOptions: {
+					input: resolve('web/index.html'),
+				},
 			},
 		},
-	};
+	},
+	builder: {},
 });

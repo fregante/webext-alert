@@ -1,6 +1,12 @@
 {
 	"$schema": "https://openapi.vercel.sh/vercel.json",
 	"framework": null,
-	"buildCommand": "vite build --mode web",
-	"outputDirectory": "dist"
+	"buildCommand": "vite build",
+	"outputDirectory": "dist",
+	"rewrites": [
+		{
+			"source": "/",
+			"destination": "/web/index.html"
+		}
+	]
 }
