@@ -2,11 +2,10 @@
 	"extends": "@sindresorhus/tsconfig",
 	"compilerOptions": {
 		"rootDir": "source",
-		"outDir": "distribution",
 		"lib": null,
-		// Source handled by Parcel
-		"emitDeclarationOnly": true,
-		"types": ["chrome"]
+		// Source handled by Vite
+		"noEmit": true,
+		"types": ["chrome", "vite/client"]
 	},
 	"include": [
 		"source"

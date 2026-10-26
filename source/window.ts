@@ -1,7 +1,7 @@
 import oneEvent from 'webext-events/one-event';
 import {isChrome} from 'webext-detect';
-import css from 'bundle-text:../web/style.css';
-import js from 'bundle-text:../web/main.js';
+import css from '../web/style.css?inline';
+import js from '../web/main.js?raw';
 import {type MessageKind, getHtmlFileUrl, listenForAnswer} from './shared.js';
 
 async function onWindowClose(watchedWindowId: number): Promise<void> {

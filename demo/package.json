@@ -1,7 +1,0 @@
-{
-	"type": "module",
-	"alias": {
-		"webext-alert": "../source",
-		"webext-alert/page.html": "../web/index.html"
-	}
-}

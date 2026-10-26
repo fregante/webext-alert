@@ -13,8 +13,6 @@ index.d.ts
 action-popup.d.ts
 shared.d.ts
 window.d.ts
-dist
 distribution
-.parcel-cache
 demo/package-lock.json
 .vercel

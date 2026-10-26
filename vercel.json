@@ -1,6 +1,6 @@
 {
 	"$schema": "https://openapi.vercel.sh/vercel.json",
 	"framework": null,
-	"buildCommand": "parcel build web/index.html --public-url ./ --no-cache",
-	"outputDirectory": "distribution"
+	"buildCommand": "vite build",
+	"outputDirectory": "distribution/web"
 }

@@ -9,26 +9,24 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"types": "./distribution/index.d.ts",
-			"default": "./distribution/index.js"
+			"types": "./distribution/module/index.d.ts",
+			"default": "./distribution/module/index.js"
 		},
-		"./page.html": "./web/index.html"
+		"./page.html": "./distribution/web/index.html"
 	},
 	"sideEffects": false,
 	"engines": {
 		"node": ">=24"
 	},
 	"scripts": {
-		"build": "parcel build --target library",
-		"demo:build": "parcel build --no-cache",
-		"demo:watch": "parcel watch --no-cache --no-hmr",
-		"prepare": "npm run build",
+		"build": "vite build",
+		"watch": "vite build --watch",
+		"prepack": "npm run build",
 		"test": "xo && tsc",
-		"watch": "tsc --watch"
+		"watch:typescript": "tsc --watch"
 	},
 	"files": [
-		"distribution",
-		"web"
+		"distribution"
 	],
 	"keywords": [
 		"browser",
@@ -48,44 +46,18 @@
 		"webext-events": "^4.0.0"
 	},
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.16.4",
-		"@parcel/packager-ts": "^2.16.4",
-		"@parcel/transformer-inline-string": "^2.16.4",
-		"@parcel/transformer-webextension": "^2.16.4",
 		"@sindresorhus/tsconfig": "^8.1.0",
 		"@types/chrome": "^0.3.6",
 		"globals": "^17.13.0",
-		"parcel": "^2.16.4",
-		"postcss-import": "^17.0.1",
 		"typescript": "^6.0.3",
+		"unplugin-dts": "^1.1.2",
+		"vite": "^8.3.5",
+		"vite-plugin-singlefile": "^2.3.4",
+		"vite-plugin-static-copy": "^4.1.1",
 		"webext-base-css": "^2.1.0",
 		"xo": "^5.0.1"
 	},
-	"source": "source/index.ts",
-	"@parcel/resolver-default": {
-		"packageExports": true
-	},
-	"targets": {
-		"main": false,
-		"types": false,
-		"library": {
-			"isLibrary": true,
-			"includeNodeModules": false,
-			"outputFormat": "esmodule",
-			"sourceMap": false,
-			"distDir": "./distribution"
-		},
-		"demo": {
-			"engines": {
-				"browsers": "last 2 Chrome versions"
-			},
-			"source": "demo/manifest.json",
-			"sourceMap": {
-				"inline": true
-			}
-		}
-	},
 	"webExt": {
-		"sourceDir": "dist"
+		"sourceDir": "distribution/demo"
 	}
 }
