@@ -2,6 +2,6 @@
 	"type": "module",
 	"alias": {
 		"webext-alert": "../source",
-		"webext-alert/page.html": "../distribution/index.html"
+		"webext-alert/page.html": "../web/index.html"
 	}
 }

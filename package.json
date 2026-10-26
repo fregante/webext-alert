@@ -19,7 +19,7 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"build": "parcel build --target library && parcel build --target page",
+		"build": "parcel build",
 		"demo:build": "parcel build --no-cache",
 		"demo:watch": "parcel watch --no-cache --no-hmr",
 		"prepare": "npm run build",
