@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"rootDir": "source",
 		"outDir": ".",
+		"lib": null,
 		"emitDeclarationOnly": true,
 		"types": ["chrome"]
 	},
