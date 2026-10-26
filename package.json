@@ -12,7 +12,7 @@
 			"types": "./distribution/module/index.d.ts",
 			"default": "./distribution/module/index.js"
 		},
-		"./page.html": "./web/index.html"
+		"./page.html": "./distribution/web/index.html"
 	},
 	"sideEffects": false,
 	"engines": {
@@ -20,14 +20,13 @@
 	},
 	"scripts": {
 		"build": "vite build",
-		"watch:demo": "vite build --watch",
+		"watch": "vite build --watch",
 		"prepare": "npm run build",
 		"test": "xo && tsc",
-		"watch": "tsc --watch"
+		"watch:typescript": "tsc --watch"
 	},
 	"files": [
-		"distribution/module",
-		"web"
+		"distribution"
 	],
 	"keywords": [
 		"browser",
