@@ -27,23 +27,6 @@ const demoPlugins = [
 			}
 		},
 	},
-	{
-		name: 'webext-alert-demo-manifest',
-		applyToEnvironment: environment => environment.name === 'demo',
-		generateBundle() {
-			this.emitFile({
-				type: 'asset',
-				fileName: 'manifest.json',
-				source: readFileSync(resolve('demo/manifest.json'), 'utf8')
-					.replace('./unrelated-popup.html', './unrelated-popup.html'),
-			});
-			this.emitFile({
-				type: 'asset',
-				fileName: 'unrelated-popup.html',
-				source: readFileSync(resolve('demo/unrelated-popup.html'), 'utf8'),
-			});
-		},
-	},
 ];
 
 // Inline the bundled JS and CSS into the HTML so the hosted page is a single file

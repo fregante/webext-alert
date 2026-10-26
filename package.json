@@ -19,7 +19,7 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"build": "vite build",
+		"build": "vite build && cp demo/manifest.json demo/unrelated-popup.html distribution/demo",
 		"watch": "vite build --watch",
 		"prepare": "npm run build",
 		"test": "xo && tsc",
