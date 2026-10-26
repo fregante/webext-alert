@@ -20,8 +20,8 @@
 	},
 	"scripts": {
 		"build": "vite build",
-		"demo:build": "vite build --config demo/vite.config.js",
-		"demo:watch": "vite build --watch --config demo/vite.config.js",
+		"demo:build": "vite build --mode demo",
+		"demo:watch": "vite build --watch --mode demo",
 		"prepare": "npm run build",
 		"test": "xo && tsc",
 		"watch": "tsc --watch"
