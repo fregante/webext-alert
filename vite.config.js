@@ -1,12 +1,18 @@
-import {readFileSync} from 'node:fs';
-import {fileURLToPath} from 'node:url';
+import path from 'node:path';
 import {defineConfig} from 'vite';
 import dts from 'unplugin-dts/vite';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
 import {viteSingleFile} from 'vite-plugin-singlefile';
+import {dependencies} from './package.json' with {type: 'json'};
 
-const resolve = path => fileURLToPath(new URL(path, import.meta.url));
-const {dependencies} = JSON.parse(readFileSync(resolve('package.json'), 'utf8'));
+const resolve = file => path.resolve(import.meta.dirname, file);
+const demoAssets = ['demo/manifest.json', 'demo/unrelated-popup.html'].map(file => resolve(file));
+const dtsPlugin = dts({
+	root: resolve('.'),
+	include: [resolve('source')],
+	tsconfigPath: resolve('tsconfig.json'),
+});
+const only = (name, plugin) => ({...plugin, applyToEnvironment: environment => environment.name === name});
 
 // A single `vite build` produces everything:
 // - client: the library in `distribution/module` (plus d.ts files)
@@ -15,8 +21,6 @@ const {dependencies} = JSON.parse(readFileSync(resolve('package.json'), 'utf8'))
 export default defineConfig({
 	// The HTML entries are emitted relative to the root, so use the `web` folder to avoid nesting
 	root: resolve('web'),
-	base: './',
-	publicDir: false,
 	resolve: {
 		alias: [
 			// The demo imports the package by name, but `distribution/module` doesn't exist yet when it's built
@@ -25,32 +29,21 @@ export default defineConfig({
 		],
 	},
 	plugins: [
-		{
-			...viteSingleFile(),
-			applyToEnvironment: environment => environment.name === 'web',
-		},
+		only('web', viteSingleFile()),
+		only('client', dtsPlugin),
 		viteStaticCopy({
 			environment: 'demo',
-			targets: [
-				{src: resolve('demo/manifest.json'), dest: '.', rename: {stripBase: true}},
-				{src: resolve('demo/unrelated-popup.html'), dest: '.', rename: {stripBase: true}},
-			],
+			targets: [{
+				src: demoAssets,
+				dest: '.',
+				rename: {stripBase: true},
+			}],
 		}),
-		...[dts({
-			root: resolve('.'),
-			include: [resolve('source')],
-			tsconfigPath: resolve('tsconfig.json'),
-		})].flat().map(plugin => ({
-			...plugin,
-			applyToEnvironment: environment => environment.name === 'client',
-		})),
 	],
 	build: {
 		outDir: resolve('distribution/module'),
 		emptyOutDir: true,
-		sourcemap: false,
 		minify: false,
-		target: 'esnext',
 		lib: {
 			entry: resolve('source/index.ts'),
 			formats: ['es'],
@@ -65,7 +58,6 @@ export default defineConfig({
 			consumer: 'client',
 			build: {
 				outDir: resolve('distribution/demo'),
-				emptyOutDir: true,
 				target: 'chrome120',
 				sourcemap: 'inline',
 				rollupOptions: {
@@ -83,7 +75,6 @@ export default defineConfig({
 			consumer: 'client',
 			build: {
 				outDir: resolve('distribution/web'),
-				emptyOutDir: true,
 				rollupOptions: {
 					input: resolve('web/index.html'),
 				},
