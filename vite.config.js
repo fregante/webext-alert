@@ -1,4 +1,7 @@
+import {readFileSync} from 'node:fs';
 import {defineConfig} from 'vite';
+
+const {dependencies} = JSON.parse(readFileSync(new URL('package.json', import.meta.url), 'utf8'));
 
 export default defineConfig({
 	build: {
@@ -12,7 +15,7 @@ export default defineConfig({
 			fileName: 'index',
 		},
 		rollupOptions: {
-			external: [/^webext-/v],
+			external: Object.keys(dependencies).map(name => new RegExp(`^${name}(/|$)`, 'v')),
 		},
 	},
 });

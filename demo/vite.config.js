@@ -9,11 +9,26 @@ export default defineConfig({
 	base: './',
 	publicDir: false,
 	resolve: {
-		alias: {
-			'webext-alert': resolve('../source/index.ts'),
-		},
+		alias: [
+			{find: /^webext-alert$/v, replacement: resolve('../source/index.ts')},
+		],
 	},
 	plugins: [
+		{
+			// Resolve the package's `page.html` export to the URL of the bundled HTML entry
+			name: 'webext-alert-page-url',
+			enforce: 'pre',
+			resolveId(id) {
+				if (id === 'webext-alert/page.html?url') {
+					return '\0webext-alert-page-url';
+				}
+			},
+			load(id) {
+				if (id === '\0webext-alert-page-url') {
+					return 'export default chrome.runtime.getURL("web/index.html");';
+				}
+			},
+		},
 		{
 			name: 'emit-manifest',
 			generateBundle() {
@@ -34,8 +49,8 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				background: resolve('background.js'),
+				page: resolve('../web/index.html'),
 				'demo/unrelated-popup': resolve('unrelated-popup.html'),
-				'web/index': resolve('../web/index.html'),
 			},
 			output: {
 				entryFileNames: '[name].js',
