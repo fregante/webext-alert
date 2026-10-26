@@ -23,7 +23,7 @@ const demoPlugins = [
 		},
 		load(id) {
 			if (id === '\0webext-alert-page-url') {
-				return 'export default chrome.runtime.getURL("web/index.html");';
+				return 'export default chrome.runtime.getURL("index.html");';
 			}
 		},
 	},
@@ -35,7 +35,12 @@ const demoPlugins = [
 				type: 'asset',
 				fileName: 'manifest.json',
 				source: readFileSync(resolve('demo/manifest.json'), 'utf8')
-					.replace('./unrelated-popup.html', './demo/unrelated-popup.html'),
+					.replace('./unrelated-popup.html', './unrelated-popup.html'),
+			});
+			this.emitFile({
+				type: 'asset',
+				fileName: 'unrelated-popup.html',
+				source: readFileSync(resolve('demo/unrelated-popup.html'), 'utf8'),
 			});
 		},
 	},
@@ -46,25 +51,29 @@ const demoPlugins = [
 // - demo: the demo extension in `distribution/demo`
 // - web: the hosted page in `distribution/web`
 export default defineConfig({
+	// The HTML entries are emitted relative to the root, so use the `web` folder to avoid nesting
+	root: resolve('web'),
 	base: './',
 	publicDir: false,
 	plugins: [
 		...demoPlugins,
 		...[dts({
-			include: ['source'],
+			root: resolve('.'),
+			include: [resolve('source')],
 			tsconfigPath: resolve('tsconfig.json'),
+			bundleTypes: true,
 		})].flat().map(plugin => ({
 			...plugin,
 			applyToEnvironment: environment => environment.name === 'client',
 		})),
 	],
 	build: {
-		outDir: 'distribution/module',
+		outDir: resolve('distribution/module'),
 		sourcemap: false,
 		minify: false,
 		target: 'esnext',
 		lib: {
-			entry: 'source/index.ts',
+			entry: resolve('source/index.ts'),
 			formats: ['es'],
 			fileName: 'index',
 		},
@@ -76,15 +85,14 @@ export default defineConfig({
 		demo: {
 			consumer: 'client',
 			build: {
-				outDir: 'distribution/demo',
+				outDir: resolve('distribution/demo'),
 				emptyOutDir: true,
 				target: 'chrome120',
 				sourcemap: 'inline',
 				rollupOptions: {
 					input: {
 						background: resolve('demo/background.js'),
-						page: resolve('web/index.html'),
-						'demo/unrelated-popup': resolve('demo/unrelated-popup.html'),
+						index: resolve('web/index.html'),
 					},
 					output: {
 						entryFileNames: '[name].js',
@@ -95,7 +103,7 @@ export default defineConfig({
 		web: {
 			consumer: 'client',
 			build: {
-				outDir: 'distribution/web',
+				outDir: resolve('distribution/web'),
 				emptyOutDir: true,
 				rollupOptions: {
 					input: resolve('web/index.html'),
