@@ -11,8 +11,8 @@ export async function showInActionPopup(message: string, kind: MessageKind, defa
 	const result = queue.then(async () => showOne(message, kind, defaultValue));
 
 	// Safely chains the 500ms delay regardless of whether showOne succeeded or failed
-	// eslint-disable-next-line unicorn/no-async-promise-finally, @typescript-eslint/strict-void-return -- Intentional
-	queue = result.finally(async () => sleep(500));
+	// The queue must never reject: it would be an uncaught error, and it would skip every following popup
+	queue = Promise.allSettled([result]).then(async () => sleep(500));
 
 	return result;
 }
