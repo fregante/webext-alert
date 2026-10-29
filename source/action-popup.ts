@@ -2,19 +2,23 @@ import {
 	type MessageKind,
 	getHtmlFileUrl,
 	listenForAnswer,
-	sleep,
 } from './shared.js';
 
-let queue: Promise<unknown> = Promise.resolve();
+// Only ever resolves, so a failed popup never blocks or breaks the following ones
+let queue: Promise<void> = Promise.resolve();
 
 export async function showInActionPopup(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
-	const result = queue.then(async () => showOne(message, kind, defaultValue));
+	const previous = queue;
+	const {promise, resolve} = Promise.withResolvers<void>();
+	queue = promise;
 
-	// Safely chains the 500ms delay regardless of whether showOne succeeded or failed
-	// The queue must never reject: it would be an uncaught error, and it would skip every following popup
-	queue = Promise.allSettled([result]).then(async () => sleep(500));
-
-	return result;
+	await previous;
+	try {
+		return await showOne(message, kind, defaultValue);
+	} finally {
+		// Delay the next popup regardless of whether this one succeeded or failed
+		setTimeout(resolve, 500);
+	}
 }
 
 async function showOne(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
