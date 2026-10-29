@@ -2,7 +2,6 @@ import path from 'node:path';
 import {defineConfig} from 'vite';
 import dts from 'unplugin-dts/vite';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
-import {viteSingleFile} from 'vite-plugin-singlefile';
 import pkg from './package.json' with {type: 'json'};
 
 const only = (name, plugin) => ({...plugin, applyToEnvironment: environment => environment.name === name});
@@ -18,6 +17,8 @@ export default defineConfig({
 	},
 	// The HTML entries are emitted relative to the root, so use the `web` folder to avoid nesting
 	root: 'web',
+	// Extension pages and the hosted page must reference their assets relative to the HTML file
+	base: './',
 	resolve: {
 		alias: [
 			// The demo imports the package by name, but `distribution/module` doesn't exist yet when it's built
@@ -26,7 +27,6 @@ export default defineConfig({
 		],
 	},
 	plugins: [
-		only('web', viteSingleFile()),
 		only('client', dts({include: ['../source']})),
 		viteStaticCopy({
 			environment: 'demo',

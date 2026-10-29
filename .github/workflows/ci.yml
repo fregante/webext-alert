@@ -32,3 +32,4 @@ jobs:
           node-version-file: package.json
       - run: npm install
       - run: npm run build
+      - run: npm run test:build
