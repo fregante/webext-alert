@@ -119,7 +119,7 @@ chrome.action.onClicked.addListener(() => showErrors(async () => {
 
 ### localWebExtAlertHtml(url)
 
-`alert()` may display the message using a remote page hosted on [unpkg](https://unpkg.com/webext-alert/distribution/web/index.html). The source of this page can be found in the [`./web` folder](./web). The remote page can't communicate with your extension, so `confirm()` and `prompt()` **require** a local copy when the custom window is used (service workers, Firefox, Safari). For `alert()` it's optional, but it adds offline support.
+`alert()` may display the message using a remote page hosted on [unpkg](https://unpkg.com/webext-alert/web/index.html). The source of this page can be found in the [`./web` folder](./web). The remote page can't communicate with your extension, so `confirm()` and `prompt()` **require** a local copy when the custom window is used (service workers, Firefox, Safari). For `alert()` it's optional, but it adds offline support.
 
 If you use an HTML-aware bundler, you can import the bundled page URL directly from the package:
 
@@ -132,7 +132,7 @@ import {localWebExtAlertHtml} from 'webext-alert';
 localWebExtAlertHtml(pageUrl);
 ```
 
-Otherwise, download [the same file](https://unpkg.com/webext-alert/distribution/web/index.html) into your extension and pass its path to `localWebExtAlertHtml`.
+Otherwise, download [the same file](https://unpkg.com/webext-alert/web/index.html) into your extension and pass its path to `localWebExtAlertHtml`.
 
 ## Related
 
