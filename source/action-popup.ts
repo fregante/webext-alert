@@ -9,8 +9,11 @@ let queue: Promise<unknown> = Promise.resolve();
 
 export async function showInActionPopup(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
 	const result = queue.then(async () => showOne(message, kind, defaultValue));
-	// Wait for it to settle, even if it failed, then cool down. Only the next popup is delayed, not the answer
-	queue = Promise.allSettled([result]).then(async () => sleep(500));
+
+	// Safely chains the 500ms delay regardless of whether showOne succeeded or failed
+	// eslint-disable-next-line unicorn/no-async-promise-finally, @typescript-eslint/strict-void-return -- Intentional
+	queue = result.finally(async () => sleep(500));
+
 	return result;
 }
 
