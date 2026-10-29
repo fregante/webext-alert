@@ -38,6 +38,7 @@ export default defineConfig({
 		}),
 	],
 	build: {
+		modulePreload: false,
 		outDir: '../distribution/module',
 		emptyOutDir: true,
 		minify: false,
