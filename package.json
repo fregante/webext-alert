@@ -1,6 +1,6 @@
 {
 	"name": "webext-alert",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"description": "alert() for background pages/workers in Web Extensions",
 	"license": "MIT",
 	"repository": "fregante/webext-alert",
@@ -27,7 +27,8 @@
 		"watch:typescript": "tsc --watch"
 	},
 	"files": [
-		"distribution"
+		"distribution/module",
+		"distribution/web"
 	],
 	"keywords": [
 		"browser",

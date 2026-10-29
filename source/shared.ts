@@ -1,6 +1,6 @@
 export type MessageKind = 'alert' | 'confirm' | 'prompt';
 
-export const defaultUrl = 'https://webext-alert.vercel.app/';
+export const defaultUrl = import.meta.env.WEB_URL;
 let htmlFileUrl = new URL(defaultUrl);
 
 export function setHtmlFileUrl(url: string): void {

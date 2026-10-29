@@ -12,6 +12,10 @@ const only = (name, plugin) => ({...plugin, applyToEnvironment: environment => e
 // - demo: the demo extension in `distribution/demo`
 // - web: the hosted page in `distribution/web`
 export default defineConfig({
+	define: {
+		// The hosted page is the one published with this exact version of the package
+		'import.meta.env.WEB_URL': JSON.stringify(`https://unpkg.com/${pkg.name}@${pkg.version}/web/index.html`),
+	},
 	// The HTML entries are emitted relative to the root, so use the `web` folder to avoid nesting
 	root: 'web',
 	resolve: {
@@ -34,6 +38,7 @@ export default defineConfig({
 		}),
 	],
 	build: {
+		modulePreload: false,
 		outDir: '../distribution/module',
 		emptyOutDir: true,
 		minify: false,
@@ -42,11 +47,16 @@ export default defineConfig({
 			formats: ['es'],
 			fileName: 'index',
 		},
-		rollupOptions: {
-			external: Object.keys(pkg.dependencies).map(name => new RegExp(`^${name}(/|$)`, 'v')),
-		},
 	},
 	environments: {
+		client: {
+			build: {
+				rollupOptions: {
+					// Only the library keeps its dependencies external; the demo must bundle them
+					external: Object.keys(pkg.dependencies).map(name => new RegExp(`^${name}(/|$)`, 'v')),
+				},
+			},
+		},
 		demo: {
 			consumer: 'client',
 			build: {
