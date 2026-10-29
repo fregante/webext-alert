@@ -2,19 +2,23 @@ import {
 	type MessageKind,
 	getHtmlFileUrl,
 	listenForAnswer,
-	sleep,
 } from './shared.js';
 
-let queue: Promise<unknown> = Promise.resolve();
+// Only ever resolves, so a failed popup never blocks or breaks the following ones
+let queue: Promise<void> = Promise.resolve();
 
 export async function showInActionPopup(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
-	const result = queue.then(async () => showOne(message, kind, defaultValue));
+	const previous = queue;
+	const {promise, resolve} = Promise.withResolvers<void>();
+	queue = promise;
 
-	// Safely chains the 500ms delay regardless of whether showOne succeeded or failed
-	// eslint-disable-next-line unicorn/no-async-promise-finally, @typescript-eslint/strict-void-return -- Intentional
-	queue = result.finally(async () => sleep(500));
-
-	return result;
+	await previous;
+	try {
+		return await showOne(message, kind, defaultValue);
+	} finally {
+		// Delay the next popup regardless of whether this one succeeded or failed
+		setTimeout(resolve, 500);
+	}
 }
 
 async function showOne(message: string, kind: MessageKind, defaultValue: string): Promise<unknown> {
