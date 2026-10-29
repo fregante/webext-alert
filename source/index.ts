@@ -75,7 +75,7 @@ export function localWebExtAlertHtml(url = defaultUrl): void {
 /**
  Runs the callback and, if it throws (or returns a rejected promise), shows the error to the user via `alert()` and rethrows it.
 
- To use it as a listener, wrap the call: `() => showErrors(callback)`.
+ To use it as a listener, see `showErrorsCallback`.
 
  @param callback The function to run, sync or async
  @returns Whatever the callback returns
@@ -87,4 +87,18 @@ export async function showErrors<ReturnType>(callback: () => ReturnType): Promis
 		await alert(error instanceof Error ? error.message : String(error));
 		throw error;
 	}
+}
+
+/**
+ Wraps the callback so that, if it throws (or returns a rejected promise), the error is shown to the user via `alert()` and rethrown.
+
+ Meant to be used as a listener: `chrome.someEvent.addListener(showErrorsCallback(callback))`.
+
+ @param callback The function to wrap, sync or async
+ @returns A function that accepts the same arguments and returns a promise of whatever `callback` returns
+*/
+export function showErrorsCallback<Arguments extends unknown[], Result>(
+	callback: (...arguments_: Arguments) => Result | Promise<Result>,
+): (...arguments_: Arguments) => Promise<Result> {
+	return async (...arguments_) => showErrors(async () => callback(...arguments_));
 }

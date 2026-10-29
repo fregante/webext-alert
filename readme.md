@@ -26,7 +26,7 @@ npm install webext-alert
 ## Usage
 
 ```js
-import {alert, prompt, confirm, showErrors} from 'webext-alert';
+import {alert, prompt, confirm, showErrors, showErrorsCallback} from 'webext-alert';
 
 await alert('Hello from background script!');
 await prompt('What is your name?', 'Anonymous');
@@ -35,6 +35,10 @@ await confirm('Are you sure?');
 await showErrors(async () => {
 	throw new Error('Something went wrong!');
 });
+
+chrome.action.onClicked.addListener(showErrorsCallback(async () => {
+	throw new Error('Something went wrong!');
+}));
 ```
 
 <img alt="alert from service worker in MV3" src="https://github.com/user-attachments/assets/ba6ae04f-3219-4f58-af0a-2d3f348d15e3">
@@ -109,10 +113,16 @@ await showErrors(async () => {
 });
 ```
 
-To use it as a listener, wrap the call:
+To use it as a listener, see [`showErrorsCallback`](#showerrorscallbackcallback).
+
+### showErrorsCallback(callback)
+
+Wraps `callback` like [`showErrors`](#showerrorscallback), so it can be passed directly as a listener. The returned function accepts the same arguments as `callback`.
 
 ```js
-chrome.action.onClicked.addListener(() => showErrors(async () => {
+import {showErrorsCallback} from 'webext-alert';
+
+chrome.action.onClicked.addListener(showErrorsCallback(async () => {
 	await chrome.permissions.request({origins: ['*://*/*']});
 }));
 ```
