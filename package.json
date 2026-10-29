@@ -26,7 +26,8 @@
 		"watch:typescript": "tsc --watch"
 	},
 	"files": [
-		"distribution"
+		"distribution/module",
+		"distribution/web"
 	],
 	"keywords": [
 		"browser",

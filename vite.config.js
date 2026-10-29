@@ -12,6 +12,10 @@ const only = (name, plugin) => ({...plugin, applyToEnvironment: environment => e
 // - demo: the demo extension in `distribution/demo`
 // - web: the hosted page in `distribution/web`
 export default defineConfig({
+	define: {
+		// The hosted page is the one published with this exact version of the package
+		'import.meta.env.WEB_URL': JSON.stringify(`https://unpkg.com/${pkg.name}@${pkg.version}/web/index.html`),
+	},
 	// The HTML entries are emitted relative to the root, so use the `web` folder to avoid nesting
 	root: 'web',
 	resolve: {
@@ -34,6 +38,7 @@ export default defineConfig({
 		}),
 	],
 	build: {
+		modulePreload: false,
 		outDir: '../distribution/module',
 		emptyOutDir: true,
 		minify: false,
