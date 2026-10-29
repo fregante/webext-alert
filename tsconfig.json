@@ -5,7 +5,7 @@
 		"lib": null,
 		// Source handled by Vite
 		"noEmit": true,
-		"types": ["chrome", "vite/client"]
+		"types": ["chrome", "node", "vite/client"]
 	},
 	"include": [
 		"source"
