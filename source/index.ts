@@ -92,10 +92,10 @@ export async function showErrors<ReturnType>(callback: () => ReturnType): Promis
 /**
  Wraps the callback so that, if it throws (or returns a rejected promise), the error is shown to the user via `alert()` and rethrown.
 
- Meant to be used as a listener: `chrome.someEvent.addListener(showErrorsCallback(callback))`.
+ Meant to be used as a listener: `chrome.someEvent.addListener(showErrorsCallback(callback))`. The arguments that the event passes to the listener (for example `tabId, changeInfo, tab` for `chrome.tabs.onUpdated`) are passed through to `callback`.
 
- @param callback The function to wrap, sync or async
- @returns A function that accepts the same arguments and returns a promise of whatever `callback` returns
+ @param callback The function to wrap, sync or async. It receives the arguments of the listener
+ @returns A function that accepts the same arguments as `callback` and returns a promise of whatever `callback` returns
 */
 export function showErrorsCallback<Arguments extends unknown[], Result>(
 	callback: (...arguments_: Arguments) => Result | Promise<Result>,

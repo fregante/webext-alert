@@ -117,13 +117,20 @@ To use it as a listener, see [`showErrorsCallback`](#showerrorscallbackcallback)
 
 ### showErrorsCallback(callback)
 
-Wraps `callback` like [`showErrors`](#showerrorscallback), so it can be passed directly as a listener. The returned function accepts the same arguments as `callback`.
+Wraps `callback` like [`showErrors`](#showerrorscallback), so it can be passed directly as a listener. The arguments that the event passes to the listener are passed through to `callback`, and the returned promise resolves to whatever `callback` returns.
 
 ```js
 import {showErrorsCallback} from 'webext-alert';
 
 chrome.action.onClicked.addListener(showErrorsCallback(async () => {
 	await chrome.permissions.request({origins: ['*://*/*']});
+}));
+
+// `tabId`, `changeInfo` and `tab` are the arguments of `onUpdated`, passed through as they are
+chrome.tabs.onUpdated.addListener(showErrorsCallback(async (tabId, changeInfo, tab) => {
+	if (changeInfo.status === 'complete') {
+		await chrome.tabs.sendMessage(tabId, {url: tab.url});
+	}
 }));
 ```
 
