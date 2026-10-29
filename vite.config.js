@@ -47,11 +47,16 @@ export default defineConfig({
 			formats: ['es'],
 			fileName: 'index',
 		},
-		rollupOptions: {
-			external: Object.keys(pkg.dependencies).map(name => new RegExp(`^${name}(/|$)`, 'v')),
-		},
 	},
 	environments: {
+		client: {
+			build: {
+				rollupOptions: {
+					// Only the library keeps its dependencies external; the demo must bundle them
+					external: Object.keys(pkg.dependencies).map(name => new RegExp(`^${name}(/|$)`, 'v')),
+				},
+			},
+		},
 		demo: {
 			consumer: 'client',
 			build: {
