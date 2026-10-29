@@ -1,7 +1,6 @@
 import path from 'node:path';
 import {defineConfig} from 'vite';
 import dts from 'unplugin-dts/vite';
-import {viteStaticCopy} from 'vite-plugin-static-copy';
 import {viteSingleFile} from 'vite-plugin-singlefile';
 import pkg from './package.json' with {type: 'json'};
 
@@ -18,6 +17,8 @@ export default defineConfig({
 	},
 	// The HTML entries are emitted relative to the root, so use the `web` folder to avoid nesting
 	root: 'web',
+	// Static files of the demo extension, copied as-is by the `demo` environment only
+	publicDir: '../demo/public',
 	resolve: {
 		alias: [
 			// The demo imports the package by name, but `distribution/module` doesn't exist yet when it's built
@@ -28,20 +29,13 @@ export default defineConfig({
 	plugins: [
 		only('web', viteSingleFile()),
 		only('client', dts({include: ['../source']})),
-		viteStaticCopy({
-			environment: 'demo',
-			targets: [{
-				src: ['../demo/manifest.json', '../demo/unrelated-popup.html'],
-				dest: '.',
-				rename: {stripBase: true},
-			}],
-		}),
 	],
 	build: {
 		modulePreload: false,
 		outDir: '../distribution/module',
 		emptyOutDir: true,
 		minify: false,
+		copyPublicDir: false,
 		lib: {
 			entry: '../source/index.ts',
 			formats: ['es'],
@@ -61,6 +55,7 @@ export default defineConfig({
 			consumer: 'client',
 			build: {
 				outDir: '../distribution/demo',
+				copyPublicDir: true,
 				sourcemap: 'inline',
 				rollupOptions: {
 					input: {
