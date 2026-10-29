@@ -2,7 +2,6 @@ import path from 'node:path';
 import {defineConfig} from 'vite';
 import dts from 'unplugin-dts/vite';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
-import {viteSingleFile} from 'vite-plugin-singlefile';
 import pkg from './package.json' with {type: 'json'};
 
 const only = (name, plugin) => ({...plugin, applyToEnvironment: environment => environment.name === name});
@@ -26,7 +25,6 @@ export default defineConfig({
 		],
 	},
 	plugins: [
-		only('web', viteSingleFile()),
 		only('client', dts({include: ['../source']})),
 		viteStaticCopy({
 			environment: 'demo',
