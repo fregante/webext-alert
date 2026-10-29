@@ -20,9 +20,10 @@
 	},
 	"scripts": {
 		"build": "vite build",
+		"test:build": "node --test test/*.test.js",
 		"watch": "vite build --watch",
 		"prepack": "npm run build",
-		"test": "xo && tsc",
+		"test": "xo && tsc && npm run build && npm run test:build",
 		"watch:typescript": "tsc --watch"
 	},
 	"files": [
